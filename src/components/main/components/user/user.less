@@ -1,0 +1,42 @@
+.user {
+  &-avatar-dropdown {
+    cursor: pointer;
+    display: inline-block;
+    // height: 64px;
+    vertical-align: middle;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+
+    // line-height: 64px;
+    .ivu-badge-dot {
+      top: 16px;
+    }
+
+    .ivu-dropdown {
+      margin-right: 10px;
+    }
+
+    a {
+      background-color: rgba(255, 255, 255, 0);
+      color: rgba(8, 8, 8, 1);
+      font-size: 22px;
+      font-family: Microsoft Yahei;
+      border: 1px solid rgba(255, 255, 255, 0);
+    }
+  }
+}
+
+.user-avatar-dropdown {
+  /deep/ .ivu-dropdown .ivu-select-dropdown {
+    overflow: auto !important;
+    max-height: 500px !important;
+  }
+}
+
+.main .content-wrapper {
+  /deep/ .ivu-tabs .ivu-tabs-tabpane {
+    height: 100%;
+    min-height: 500px;
+  }
+}

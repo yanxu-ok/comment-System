@@ -1,0 +1,123 @@
+<template>
+  <div>
+    <div class="ho_article_contain">
+      <!-- 栏目 -->
+      <template v-if="columnList && columnList.length != 0">
+        <Select @on-change="selectChange" style="width:150px" v-model="colKey">
+          <Option
+            v-for="(item, index) in columnList"
+            :value="item.columnKey"
+            :key="index"
+            >{{ item.columnName }}</Option
+          >
+        </Select>
+      </template>
+      <datePicker @dateValue="handleDate"></datePicker>
+    </div>
+    <div style="margin-top:20px">
+      <Table stripe :columns="columns" :data="getPraiseDataList">
+        <template slot-scope="{ index }" slot="paiming">
+          <div>{{ index + 1 }}</div>
+        </template>
+      </Table>
+    </div>
+    <div class="pagination_contain">
+      <pagination
+        :total="getNewTotal"
+        @pageChange="getCurrectPage"
+      ></pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapMutations, mapActions } from "vuex";
+import pagination from "_c/pagination";
+import datePicker from "_c/date-picker";
+export default {
+  components: {
+    datePicker,
+    pagination
+  },
+  props: ["columnList"],
+  data() {
+    return {
+      date: null,
+      columns: [
+        {
+          title: "排名",
+          key: "name",
+          slot: "paiming"
+        },
+        {
+          title: "评论内容",
+          key: "commentContent"
+        },
+        {
+          title: "所在文章",
+          key: "programName"
+        },
+        {
+          title: "点赞数",
+          key: "praiseNum"
+        }
+      ],
+      colKey: ""
+    };
+  },
+  computed: {
+    ...mapGetters(["getNewTotal", "getPraiseDataList", "getCurrectCateKey"])
+  },
+  methods: {
+    // 时间变化
+    handleDate(date) {
+      this.date = date;
+      this.praiseAndFloorList({
+        pageSize: 10,
+        offset: 1,
+        startTime: date[0],
+        endTime: date[1]
+      });
+    },
+    // 当前页发生变化时
+    getCurrectPage(currect) {
+      console.log(currect);
+      if (!this.date) {
+        this.praiseAndFloorList({
+          pageSize: 10,
+          offset: currect
+        });
+      } else {
+        this.praiseAndFloorList({
+          pageSize: 10,
+          offset: currect,
+          startTime: this.date[0],
+          endTime: this.date[1]
+        });
+      }
+    },
+    // 下拉列表
+    selectChange(value) {
+      this.colKey = value;
+      // 先改变栏目key 在请求
+      this.setCurrectCateKey(value);
+      this.praiseAndFloorList({ pageSize: 10, offset: 1 });
+    },
+    ...mapActions(["getColumnList", "praiseAndFloorList"]),
+    ...mapMutations(["setCurrectCateKey"])
+  }
+};
+</script>
+
+<style lang="less" scoped>
+.ho_article_contain {
+  display: flex;
+}
+
+.pagination_contain {
+  margin-top: 10px;
+  float: right;
+  margin-right: 300px;
+}
+</style>
+
