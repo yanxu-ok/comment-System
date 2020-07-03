@@ -213,9 +213,6 @@ export default {
                             query: { obj: params.row }
                           });
                         }
-                      },
-                      style: {
-                        color: "#526BE3"
                       }
                     },
                     "文章名：" + params.row.programName

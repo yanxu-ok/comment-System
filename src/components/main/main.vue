@@ -19,7 +19,7 @@
       >
         <!-- 需要放在菜单上面的内容，如Logo，写在side-menu标签内部，如下 -->
         <div class="logo-con">
-          评论系统
+          <p :style="{ display: collapsed ? 'none' : 'block' }">评论系统</p>
         </div>
       </side-menu>
     </Sider>

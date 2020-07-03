@@ -41,7 +41,7 @@ export default [{
     path: '/comment-audit',
     name: 'comment-audit',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-chatboxes',
       title: '评论审核'
     },
     component: Main,
@@ -49,7 +49,8 @@ export default [{
         path: 'local-audit',
         name: 'local-audit',
         meta: {
-          title: '本站评论审核'
+          title: '本站评论审核',
+          icon: 'ios-photos'
         },
         component: () => import('@/view/comment/local-audit/local-audit.vue')
       },
@@ -58,7 +59,7 @@ export default [{
         name: 'report-audit',
         meta: {
           title: '举报评论审核',
-          icon: ''
+          icon: 'ios-photos-outline'
         },
         component: () => import('@/view/comment/report-audit/report-audit.vue')
       },
@@ -67,7 +68,7 @@ export default [{
         name: 'blacklist',
         meta: {
           title: '黑名单',
-          icon: ''
+          icon: 'ios-people'
         },
         component: () => import('@/view/comment/blacklist/blacklist.vue')
       }, {
@@ -75,7 +76,7 @@ export default [{
         name: 'keywords',
         meta: {
           title: '关键词过滤',
-          icon: ''
+          icon: 'ios-color-filter'
         },
         component: () => import('@/view/comment/keywords/keywords.vue')
       },
@@ -95,7 +96,7 @@ export default [{
     path: '/comment-management',
     name: 'comment-management',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'ios-switch',
       title: '评论管理'
     },
     component: Main,
@@ -103,7 +104,8 @@ export default [{
         path: 'switch-management',
         name: 'switch-management',
         meta: {
-          title: '评论开关管理'
+          title: '评论开关管理',
+          icon: 'ios-switch'
         },
         component: () => import('@/view/comment-management/switch-management/switch-management.vue')
       },
@@ -140,7 +142,7 @@ export default [{
     path: '/data-statistics',
     name: 'data-statistics',
     meta: {
-      icon: 'logo-buffer',
+      icon: 'md-stats',
       title: '数据统计'
     },
     component: Main,
@@ -148,7 +150,8 @@ export default [{
         path: 'comment-statistics',
         name: 'comment-statistics',
         meta: {
-          title: '评论统计'
+          title: '评论统计',
+          icon: 'ios-stats-outline',
         },
         component: () => import('@/view/data-statistics/comment-statistics/comment-statistics.vue')
       },
@@ -156,7 +159,8 @@ export default [{
         path: 'hot-article',
         name: 'hot-article',
         meta: {
-          title: '热门文章'
+          title: '热门文章',
+          icon: 'ios-book'
         },
         component: () => import('@/view/data-statistics/hot-article/hot-article.vue')
       },
@@ -164,7 +168,8 @@ export default [{
         path: 'like-build',
         name: 'like-build',
         meta: {
-          title: '点赞盖楼'
+          title: '点赞盖楼',
+          icon: 'ios-build'
         },
         component: () => import('@/view/data-statistics/like-build/like-build.vue')
       }
@@ -174,7 +179,6 @@ export default [{
     path: '/setup',
     name: 'setup',
     meta: {
-      icon: 'setup',
       title: '系统设置',
       access: ['super']
     },
@@ -183,7 +187,8 @@ export default [{
       path: 'platform-bind',
       name: 'platform-bind',
       meta: {
-        title: '平台绑定'
+        title: '平台绑定',
+        icon: 'md-settings',
       },
       component: () => import('@/view/setup/platform-bind/platform-bind.vue')
     }]
