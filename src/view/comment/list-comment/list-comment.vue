@@ -99,6 +99,7 @@ export default {
       currectList: "", // 当前选中的数组列表
       obj: {}, //当前传过来的指针
       commentList: [], //当前列表
+      currect: 1, //当前页的数据
       total: 0,
       status: 0,
       cateList: [
@@ -196,6 +197,28 @@ export default {
                       "span",
                       {
                         on: {
+                          click: () => {
+                            params.row.isHot = 1;
+                            _this.upComment({
+                              commentkey: value,
+                              isHot: 0
+                            });
+                          }
+                        },
+                        class: {
+                          floor_contain_hot: true
+                        },
+                        style: {
+                          display:
+                            params.row.isHot == 1 ? "inile-block" : "none"
+                        }
+                      },
+                      "取消热门评论"
+                    ),
+                    h(
+                      "span",
+                      {
+                        on: {
                           click() {
                             // 回复
                             _this.modalOpen1(params.row);
@@ -226,7 +249,7 @@ export default {
                     },
                     on: {
                       click() {
-                        _this.passOfflineComment({
+                        _this.pass({
                           idListStr: params.row.commentKey,
                           changeFlag: 1
                         });
@@ -249,7 +272,7 @@ export default {
                     },
                     on: {
                       click() {
-                        _this.passOfflineComment({
+                        _this.pass({
                           idListStr: params.row.commentKey,
                           changeFlag: 2
                         });
@@ -287,7 +310,20 @@ export default {
     // 设置热门评论
     upComment(obj) {
       this.updateComment(obj).then(res => {
-        this.$Message.info("设置成功");
+        console.log(res);
+        if (res.data.ok) {
+          this.$Message.info("操作成功");
+          this.getHomeStationCommentVerify({
+            offset: this.currect,
+            status: this.status,
+            pageSize: 10,
+            columnKey: this.getCurrectCateKey,
+            selectIndex: this.selectValue ? this.selectValue : "1",
+            selectValue: this.searchValue
+          });
+        } else {
+          this.$Message.info("操作失败");
+        }
       });
     },
 
@@ -317,6 +353,7 @@ export default {
 
     // 当前页发生变化时
     getCurrectPage(currect) {
+      this.currect = currect;
       console.log(currect);
       this.getCommentAllPage({
         row: this.obj,
@@ -374,6 +411,16 @@ export default {
             this.commentList = res.data.data;
             this.total = res.data.totalCount;
           });
+          this.$Message.info("操作成功");
+        } else {
+          this.$Message.info("操作失败");
+        }
+      });
+    },
+    // 单个下线
+    pass({ idListStr, changeFlag }) {
+      this.passOfflineComment({ idListStr, changeFlag }).then(res => {
+        if (res.data.ok) {
           this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");

@@ -221,7 +221,7 @@ export default {
                     },
                     on: {
                       click() {
-                        _this.passOfflineComment({
+                        _this.pass({
                           idListStr: params.row.commentKey,
                           changeFlag: 1
                         });
@@ -276,6 +276,7 @@ export default {
     ...mapMutations(["setCurrectCateKey"]),
     // 当前页发生变化时
     getCurrectPage(currect) {
+      this.currect = currect;
       console.log(currect);
       this.getHomeStationCommentVerify({
         offset: currect,
@@ -356,6 +357,16 @@ export default {
             selectIndex: this.selectValue ? this.selectValue : "1",
             selectValue: this.searchValue
           });
+          this.$Message.info("操作成功");
+        } else {
+          this.$Message.info("操作失败");
+        }
+      });
+    },
+    // 单个下线
+    pass({ idListStr, changeFlag }) {
+      this.passOfflineComment({ idListStr, changeFlag }).then(res => {
+        if (res.data.ok) {
           this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");

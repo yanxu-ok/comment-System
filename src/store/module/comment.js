@@ -337,6 +337,7 @@ export default {
           state.reportList.splice(commentIndex, 1)
           commit('setReportList', state.reportList)
           commit('setCurrectTotal', state.currectTotal - 1)
+          resolve(res)
         })
       })
     },
@@ -356,6 +357,15 @@ export default {
           changeFlag
         }).then(res => {
           console.log(res, "下线评论");
+          if (res.data.ok) {
+            let commentIndex = state.homeList.findIndex((item, index) => {
+              return item.commentKey == idListStr
+            })
+            state.homeList.splice(commentIndex, 1)
+            commit('setHomeList', state.homeList)
+            commit('setCurrectTotal', state.currectTotal - 1)
+          }
+          resolve(res)
         })
       })
     },
@@ -381,7 +391,7 @@ export default {
           isHot
         }).then(res => {
           console.log(res, "设置为热门评论");
-          resolve();
+          resolve(res);
         })
       })
     },

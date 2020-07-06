@@ -119,6 +119,7 @@ export default {
       currectRow: null, //当前行信息
       currectList: "", // 当前选中的数组列表
       cateKey: "",
+      currect: 1,
       cateList: [
         {
           value: "1",
@@ -294,6 +295,27 @@ export default {
                       "span",
                       {
                         on: {
+                          click: () => {
+                            _this.upComment({
+                              commentkey: value,
+                              isHot: 0
+                            });
+                          }
+                        },
+                        class: {
+                          floor_contain_hot: true
+                        },
+                        style: {
+                          display:
+                            params.row.isHot == 1 ? "inile-block" : "none"
+                        }
+                      },
+                      "取消热门评论"
+                    ),
+                    h(
+                      "span",
+                      {
+                        on: {
                           click() {
                             // 回复
                             _this.modalOpen1(params.row);
@@ -324,7 +346,7 @@ export default {
                     },
                     on: {
                       click() {
-                        _this.pass_offline_comment({
+                        _this.pass({
                           idListStr: params.row.commentKey,
                           changeFlag: 1
                         });
@@ -347,7 +369,7 @@ export default {
                     },
                     on: {
                       click() {
-                        _this.pass_offline_comment({
+                        _this.pass({
                           idListStr: params.row.commentKey,
                           changeFlag: 2
                         });
@@ -385,7 +407,19 @@ export default {
     // 设置热门评论
     upComment(obj) {
       this.updateComment(obj).then(res => {
-        this.$Message.info("设置成功");
+        console.log(res);
+        if (res.data.ok) {
+          this.$Message.info("操作成功");
+          this.getReportList({
+            offset: this.currect,
+            pageSize: 10,
+            columnKey: this.getCurrectCateKey,
+            selectIndex: this.selectValue ? this.selectValue : "1",
+            selectValue: this.searchValue
+          });
+        } else {
+          this.$Message.info("操作失败");
+        }
       });
     },
     // 禁言
@@ -425,6 +459,7 @@ export default {
     ...mapMutations(["setCurrectCateKey"]),
     // 当前页发生变化时
     getCurrectPage(currect) {
+      this.currect = currect;
       console.log(currect);
       this.getReportList({
         offset: currect,
@@ -432,11 +467,6 @@ export default {
         columnKey: this.getCurrectCateKey,
         selectIndex: this.selectValue ? this.selectValue : "1",
         selectValue: this.searchValue
-      }).then(res => {
-        console.log(res);
-        if (res == null || res.length == 0) {
-          this.$Message.info("当前无数据");
-        }
       });
     },
     // 评论列表下拉页
@@ -455,11 +485,6 @@ export default {
         columnKey: this.getCurrectCateKey,
         selectIndex: this.selectValue ? this.selectValue : "1",
         selectValue: this.searchValue
-      }).then(res => {
-        console.log(res);
-        if (res == null || res.length == 0) {
-          this.$Message.info("当前无数据");
-        }
       });
     },
     // 全部通过
@@ -474,6 +499,16 @@ export default {
             selectIndex: this.selectValue ? this.selectValue : "1",
             selectValue: this.searchValue
           });
+          this.$Message.info("操作成功");
+        } else {
+          this.$Message.info("操作失败");
+        }
+      });
+    },
+    // 单个下线
+    pass({ idListStr, changeFlag }) {
+      this.pass_offline_comment({ idListStr, changeFlag }).then(res => {
+        if (res.data.ok) {
           this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");
@@ -536,11 +571,6 @@ export default {
             columnKey: this.getCurrectCateKey,
             selectIndex: this.selectValue ? this.selectValue : "1",
             selectValue: this.searchValue
-          }).then(res => {
-            console.log(res);
-            if (res == null || res.length == 0) {
-              this.$Message.info("当前无数据");
-            }
           });
         } else {
           this.$Message.info("当前没有栏目");
@@ -561,11 +591,6 @@ export default {
           columnKey: this.getCurrectCateKey,
           selectIndex: this.selectValue ? this.selectValue : "1",
           selectValue: this.searchValue
-        }).then(res => {
-          console.log(res);
-          if (res == null || res.length == 0) {
-            this.$Message.info("当前无数据");
-          }
         });
       } else {
         this.$Message.info("当前没有栏目");
