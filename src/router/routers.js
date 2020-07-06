@@ -71,7 +71,8 @@ export default [{
           icon: 'ios-people'
         },
         component: () => import('@/view/comment/blacklist/blacklist.vue')
-      }, {
+      },
+      {
         path: 'keywords',
         name: 'keywords',
         meta: {
@@ -89,6 +90,16 @@ export default [{
           hideInMenu: true
         },
         component: () => import('@/view/comment/list-comment/list-comment.vue')
+      },
+      {
+        path: 'user-comment',
+        name: 'user-comment',
+        meta: {
+          title: '个人主页',
+          icon: '',
+          // hideInMenu: true
+        },
+        component: () => import('@/view/comment/user-comment/user-comment.vue')
       }
     ]
   },

@@ -277,7 +277,7 @@ export default {
                         on: {
                           click: () => {
                             _this.upComment({
-                              commentkey: value,
+                              commentkey: params.row,
                               isHot: 0
                             });
                           }

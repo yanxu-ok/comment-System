@@ -228,6 +228,7 @@ export default {
         platformKey: state.currectPlatFormId
       }
       return new Promise((resolve, reject) => {
+        commit('setHomeList', []);
         getHomeStationCommentVerify(obj).then(res => {
           commit('setCurrectTotal', res.data.totalCount) //设置分页总数
           console.log(res, "本站评论列表");

@@ -7,6 +7,10 @@ import {
   setToken,
   getToken
 } from '@/libs/util'
+import {
+  localSave,
+  localRead
+} from "@/libs/util";
 
 export default {
   state: {
@@ -122,6 +126,8 @@ export default {
     }) {
       return new Promise((resolve, reject) => {
         getUser().then(res => {
+          let userStr = JSON.stringify(res.data.data)
+          localSave('userInfo', userStr)
           commit('setUserName', res.data.data.nickname)
           commit('setUserId', res.data.data.id)
           commit('setAccess', [res.data.data.priv])
