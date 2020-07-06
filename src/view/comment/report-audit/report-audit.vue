@@ -1,104 +1,106 @@
 <template>
   <div>
-    <!-- 头部条件 -->
-    <div class="pending_contain">
-      <div>
-        <!-- 栏目 -->
-        <template v-if="newColumnList && newColumnList.length != 0">
-          <Select
-            @on-change="selectChange"
-            style="width:150px"
-            v-model="cateKey"
-          >
-            <Option
-              v-for="(item, index) in newColumnList"
-              :value="item.columnKey"
-              :key="index"
-              >{{ item.columnName }}</Option
+    <Card :bordered="false">
+      <!-- 头部条件 -->
+      <div class="pending_contain">
+        <div>
+          <!-- 栏目 -->
+          <template v-if="newColumnList && newColumnList.length != 0">
+            <Select
+              @on-change="selectChange"
+              style="width:150px"
+              v-model="cateKey"
             >
-          </Select>
-        </template>
-        <!-- 按关键词搜索 -->
-        <i-select
-          v-model="selectValue"
-          @on-change="nameChange"
-          style="width:180px;margin-left:30px"
-        >
-          <i-option
-            v-for="(item, index) in cateList"
-            :value="item.value"
-            :key="index"
-            >{{ item.label }}</i-option
+              <Option
+                v-for="(item, index) in newColumnList"
+                :value="item.columnKey"
+                :key="index"
+                >{{ item.columnName }}</Option
+              >
+            </Select>
+          </template>
+          <!-- 按关键词搜索 -->
+          <i-select
+            v-model="selectValue"
+            @on-change="nameChange"
+            style="width:180px;margin-left:30px"
           >
-        </i-select>
-        <!-- 搜索框 -->
-        <Input v-model="searchValue" placeholder="" style="width: 200px" />
-        <Button type="primary" @click="handleBtnClick">搜索</Button>
+            <i-option
+              v-for="(item, index) in cateList"
+              :value="item.value"
+              :key="index"
+              >{{ item.label }}</i-option
+            >
+          </i-select>
+          <!-- 搜索框 -->
+          <Input v-model="searchValue" placeholder="" style="width: 200px" />
+          <Button type="primary" @click="handleBtnClick">搜索</Button>
+        </div>
+        <div>
+          <Button
+            shape="circle"
+            style="margin-right:20px"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 1
+              })
+            "
+            >全部通过</Button
+          >
+          <Button
+            shape="circle"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 2
+              })
+            "
+            >全部下线</Button
+          >
+        </div>
       </div>
-      <div>
-        <Button
-          shape="circle"
-          style="margin-right:20px"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 1
-            })
-          "
-          >全部通过</Button
-        >
-        <Button
-          shape="circle"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 2
-            })
-          "
-          >全部下线</Button
-        >
+      <!-- 表格 -->
+      <div class="table_contain">
+        <Table
+          border
+          ref="selection"
+          :columns="columns"
+          :data="getNewReportList"
+          @on-selection-change="tableSelectChange"
+        ></Table>
       </div>
-    </div>
-    <!-- 表格 -->
-    <div class="table_contain">
-      <Table
-        border
-        ref="selection"
-        :columns="columns"
-        :data="getNewReportList"
-        @on-selection-change="tableSelectChange"
-      ></Table>
-    </div>
-    <!-- 分页 -->
-    <div class="pagination_contain">
-      <pagination
-        :page-size="10"
-        :total="getCurrectTotal"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+      <!-- 分页 -->
+      <div class="pagination_contain">
+        <pagination
+          :page-size="10"
+          :total="getCurrectTotal"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
 
-    <Modal v-model="modal1" title="评论列表">
-      <Table :columns="columns1" :data="getCommentList">
-        <template slot-scope="{ row }" slot="proname">
-          <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
-        </template>
-      </Table>
-      <pagination
-        :page-size="10"
-        :total="getCurrectCommentTotal"
-        @pageChange="getCurrectPage1"
-      ></pagination>
-    </Modal>
-    <Modal
-      v-model="modal5"
-      title="回复"
-      width="300"
-      @on-ok="ok"
-      @on-cancel="cancel"
-    >
-      <Input v-model="contentValue" size="small" placeholder="回复内容" />
-    </Modal>
+      <Modal v-model="modal1" title="评论列表">
+        <Table :columns="columns1" :data="getCommentList">
+          <template slot-scope="{ row }" slot="proname">
+            <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
+          </template>
+        </Table>
+        <pagination
+          :page-size="10"
+          :total="getCurrectCommentTotal"
+          @pageChange="getCurrectPage1"
+        ></pagination>
+      </Modal>
+      <Modal
+        v-model="modal5"
+        title="回复"
+        width="300"
+        @on-ok="ok"
+        @on-cancel="cancel"
+      >
+        <Input v-model="contentValue" size="small" placeholder="回复内容" />
+      </Modal>
+    </Card>
   </div>
 </template>
 

@@ -1,39 +1,41 @@
 <template>
   <div class="blacklist_contain">
-    <Input
-      placeholder="输入id"
-      clearable
-      style="width: 200px"
-      v-model="loginId"
-    />
-    <Input
-      placeholder="输入用户名"
-      clearable
-      style="width: 200px"
-      v-model="loginName"
-    />
-    <Button type="primary" shape="circle" @click="blackAdd">添加</Button>
-    <Tabs value="0">
-      <TabPane label="黑名单" name="0">
-        <Table stripe :columns="columns" :data="getBlackList">
-          <template slot-scope="{ row }" slot="action">
-            <Button
-              type="primary"
-              size="small"
-              style="margin-right: 5px"
-              @click="deleteBlackByKey(row)"
-              >恢复</Button
-            >
-          </template>
-        </Table>
-      </TabPane>
-    </Tabs>
-    <div class="pagination_contain">
-      <pagination
-        :total="getCurrectCommentTotal"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+    <Card :bordered="false">
+      <Input
+        placeholder="输入id"
+        clearable
+        style="width: 200px"
+        v-model="loginId"
+      />
+      <Input
+        placeholder="输入用户名"
+        clearable
+        style="width: 200px"
+        v-model="loginName"
+      />
+      <Button type="primary" shape="circle" @click="blackAdd">添加</Button>
+      <Tabs value="0">
+        <TabPane label="黑名单" name="0">
+          <Table stripe :columns="columns" :data="getBlackList">
+            <template slot-scope="{ row }" slot="action">
+              <Button
+                type="primary"
+                size="small"
+                style="margin-right: 5px"
+                @click="deleteBlackByKey(row)"
+                >恢复</Button
+              >
+            </template>
+          </Table>
+        </TabPane>
+      </Tabs>
+      <div class="pagination_contain">
+        <pagination
+          :total="getCurrectCommentTotal"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
+    </Card>
   </div>
 </template>
 

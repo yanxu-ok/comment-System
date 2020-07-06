@@ -1,13 +1,18 @@
 <template>
   <div style="margin:0 50px">
-    <Tabs value="1">
-      <TabPane label="点赞排行" name="1">
-        <like :columnList="newColumnList" :cateKey="getCurrectCateKey"></like>
-      </TabPane>
-      <TabPane label="盖楼排行" name="2">
-        <build :columnList="newColumnList" :cateKey="getCurrectCateKey"></build>
-      </TabPane>
-    </Tabs>
+    <Card :bordered="false">
+      <Tabs value="1">
+        <TabPane label="点赞排行" name="1">
+          <like :columnList="newColumnList" :cateKey="getCurrectCateKey"></like>
+        </TabPane>
+        <TabPane label="盖楼排行" name="2">
+          <build
+            :columnList="newColumnList"
+            :cateKey="getCurrectCateKey"
+          ></build>
+        </TabPane>
+      </Tabs>
+    </Card>
   </div>
 </template>
 

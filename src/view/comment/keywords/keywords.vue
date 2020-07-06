@@ -1,13 +1,15 @@
 <template>
   <div class="tabs_contain">
-    <Tabs value="1" @on-click="handleClick">
-      <TabPane label="敏感词" name="1">
-        <filterwords></filterwords>
-      </TabPane>
-      <TabPane label="非法词" name="2">
-        <sensitivewords></sensitivewords>
-      </TabPane>
-    </Tabs>
+    <Card :bordered="false">
+      <Tabs value="1" @on-click="handleClick">
+        <TabPane label="敏感词" name="1">
+          <filterwords></filterwords>
+        </TabPane>
+        <TabPane label="非法词" name="2">
+          <sensitivewords></sensitivewords>
+        </TabPane>
+      </Tabs>
+    </Card>
   </div>
 </template>
 

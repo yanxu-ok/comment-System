@@ -1,41 +1,43 @@
 <template>
   <div>
-    <!-- 时间选择器 -->
-    <div>
-      <datePicker @dateValue="handleDate"></datePicker>
-    </div>
-    <template v-if="getSituationList != null">
-      <div style="margin-top:20px">
-        <Row :gutter="20">
-          <i-col
-            :xs="12"
-            :md="8"
-            :lg="4"
-            v-for="(infor, i) in inforCardData"
-            :key="`infor-${i}`"
-            style="height: 120px;padding-bottom: 10px;"
-          >
-            <infoCard
-              shadow
-              :color="infor.color"
-              :icon="infor.icon"
-              :icon-size="36"
+    <Card :bordered="false">
+      <!-- 时间选择器 -->
+      <div>
+        <datePicker @dateValue="handleDate"></datePicker>
+      </div>
+      <template v-if="getSituationList != null">
+        <div style="margin-top:20px">
+          <Row :gutter="20">
+            <i-col
+              :xs="12"
+              :md="8"
+              :lg="4"
+              v-for="(infor, i) in inforCardData"
+              :key="`infor-${i}`"
+              style="height: 120px;padding-bottom: 10px;"
             >
-              <count-to :end="infor.count" count-class="count-style" />
-              <p>{{ infor.title }}</p>
-            </infoCard>
-          </i-col>
+              <infoCard
+                shadow
+                :color="infor.color"
+                :icon="infor.icon"
+                :icon-size="36"
+              >
+                <count-to :end="infor.count" count-class="count-style" />
+                <p>{{ infor.title }}</p>
+              </infoCard>
+            </i-col>
+          </Row>
+        </div>
+      </template>
+
+      <div>
+        <Row>
+          <Card shadow>
+            <example :list="dateList" style="height: 310px;" />
+          </Card>
         </Row>
       </div>
-    </template>
-
-    <div>
-      <Row>
-        <Card shadow>
-          <example :list="dateList" style="height: 310px;" />
-        </Card>
-      </Row>
-    </div>
+    </Card>
   </div>
 </template>
 

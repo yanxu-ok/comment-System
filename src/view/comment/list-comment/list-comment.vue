@@ -1,84 +1,86 @@
 <template>
   <div class="all_contain">
-    <!-- 头部条件 -->
-    <div class="pending_contain">
-      <Select
-        v-model="searchValue"
-        style="width:100px;margin-right:50px"
-        @on-change="selectChange"
-      >
-        <Option
-          v-for="item in cateList"
-          :value="item.value"
-          :key="item.value"
-          >{{ item.label }}</Option
+    <Card :bordered="false">
+      <!-- 头部条件 -->
+      <div class="pending_contain">
+        <Select
+          v-model="searchValue"
+          style="width:100px;margin-right:50px"
+          @on-change="selectChange"
         >
-      </Select>
+          <Option
+            v-for="item in cateList"
+            :value="item.value"
+            :key="item.value"
+            >{{ item.label }}</Option
+          >
+        </Select>
 
-      <div>
-        <Button
-          shape="circle"
-          style="margin-right:20px;"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 1
-            })
-          "
-          >全部通过</Button
-        >
-        <Button
-          shape="circle"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 2
-            })
-          "
-          >全部下线</Button
-        >
+        <div>
+          <Button
+            shape="circle"
+            style="margin-right:20px;"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 1
+              })
+            "
+            >全部通过</Button
+          >
+          <Button
+            shape="circle"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 2
+              })
+            "
+            >全部下线</Button
+          >
+        </div>
       </div>
-    </div>
-    <!-- 表格 -->
-    <div class="table_contain">
-      <Table
-        border
-        ref="selection"
-        :columns="columns"
-        :data="commentList"
-        @on-selection-change="tableSelectChange"
-      ></Table>
-    </div>
-    <!-- 分页 -->
-    <div class="pagination_contain">
-      <pagination
-        :page-size="10"
-        :total="total"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+      <!-- 表格 -->
+      <div class="table_contain">
+        <Table
+          border
+          ref="selection"
+          :columns="columns"
+          :data="commentList"
+          @on-selection-change="tableSelectChange"
+        ></Table>
+      </div>
+      <!-- 分页 -->
+      <div class="pagination_contain">
+        <pagination
+          :page-size="10"
+          :total="total"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
 
-    <Modal v-model="modal1" title="评论列表">
-      <Table :columns="columns1" :data="getCommentList">
-        <template slot-scope="{ row }" slot="proname">
-          <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
-        </template>
-      </Table>
-      <pagination
-        :page-size="10"
-        :total="getCurrectCommentTotal"
-        @pageChange="getCurrectPage1"
-      ></pagination>
-    </Modal>
-    <Modal
-      v-model="modal5"
-      title="回复"
-      width="300"
-      @on-ok="ok"
-      @on-cancel="cancel"
-    >
-      <Input v-model="contentValue" size="small" placeholder="回复内容" />
-    </Modal>
+      <Modal v-model="modal1" title="评论列表">
+        <Table :columns="columns1" :data="getCommentList">
+          <template slot-scope="{ row }" slot="proname">
+            <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
+          </template>
+        </Table>
+        <pagination
+          :page-size="10"
+          :total="getCurrectCommentTotal"
+          @pageChange="getCurrectPage1"
+        ></pagination>
+      </Modal>
+      <Modal
+        v-model="modal5"
+        title="回复"
+        width="300"
+        @on-ok="ok"
+        @on-cancel="cancel"
+      >
+        <Input v-model="contentValue" size="small" placeholder="回复内容" />
+      </Modal>
+    </Card>
   </div>
 </template>
 

@@ -3,69 +3,71 @@
     <!-- 事件选择器 -->
     <!-- <datePicker></datePicker> -->
     <!-- 表格 -->
-    <div style="margin-top:20px">
-      <Table
-        row-key="id"
-        :columns="columns"
-        :data="getActList"
-        border
-        width="1105"
-        style="margin: 0 auto"
-        :highlight-row="true"
-      >
-        <template slot-scope="{ row, index }" slot="forbid">
-          <i-switch
-            v-model="row.addSetting"
-            :disabled="getSetting.addSetting"
-            @on-change="
-              switchChange({
-                row,
-                setting: 'addSetting',
-                type: 'programe',
-                obj
-              })
-            "
-            :true-value="0"
-            :false-value="1"
-          />
-        </template>
-        <template slot-scope="{ row, index }" slot="hide">
-          <i-switch
-            v-model="row.hideSetting"
-            :disabled="getSetting.hideSetting"
-            @on-change="
-              switchChange({
-                row,
-                setting: 'hideSetting',
-                type: 'programe',
-                obj
-              })
-            "
-            :true-value="1"
-            :false-value="0"
-          />
-        </template>
-        <template slot-scope="{ row, index }" slot="gloal">
-          <i-switch
-            v-model="row.releaseSetting"
-            :disabled="getSetting.releaseSetting"
-            @on-change="
-              switchChange({
-                row,
-                setting: 'releaseSetting',
-                type: 'programe',
-                obj
-              })
-            "
-            :true-value="1"
-            :false-value="0"
-          />
-        </template>
-      </Table>
-    </div>
-    <div class="pagination_contain">
-      <pagination :total="getTotal" @pageChange="getCurrectPage"></pagination>
-    </div>
+    <Card :bordered="false">
+      <div style="margin-top:20px">
+        <Table
+          row-key="id"
+          :columns="columns"
+          :data="getActList"
+          border
+          width="1105"
+          style="margin: 0 auto"
+          :highlight-row="true"
+        >
+          <template slot-scope="{ row, index }" slot="forbid">
+            <i-switch
+              v-model="row.addSetting"
+              :disabled="getSetting.addSetting"
+              @on-change="
+                switchChange({
+                  row,
+                  setting: 'addSetting',
+                  type: 'programe',
+                  obj
+                })
+              "
+              :true-value="0"
+              :false-value="1"
+            />
+          </template>
+          <template slot-scope="{ row, index }" slot="hide">
+            <i-switch
+              v-model="row.hideSetting"
+              :disabled="getSetting.hideSetting"
+              @on-change="
+                switchChange({
+                  row,
+                  setting: 'hideSetting',
+                  type: 'programe',
+                  obj
+                })
+              "
+              :true-value="1"
+              :false-value="0"
+            />
+          </template>
+          <template slot-scope="{ row, index }" slot="gloal">
+            <i-switch
+              v-model="row.releaseSetting"
+              :disabled="getSetting.releaseSetting"
+              @on-change="
+                switchChange({
+                  row,
+                  setting: 'releaseSetting',
+                  type: 'programe',
+                  obj
+                })
+              "
+              :true-value="1"
+              :false-value="0"
+            />
+          </template>
+        </Table>
+      </div>
+      <div class="pagination_contain">
+        <pagination :total="getTotal" @pageChange="getCurrectPage"></pagination>
+      </div>
+    </Card>
   </div>
 </template>
 

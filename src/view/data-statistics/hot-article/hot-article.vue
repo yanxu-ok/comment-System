@@ -1,32 +1,38 @@
 <template>
   <div style="margin:0 50px">
-    <div class="ho_article_contain">
-      <!-- 栏目 -->
-      <template v-if="newColumnList && newColumnList.length != 0">
-        <Select @on-change="selectChange" style="width:150px" v-model="cateKey">
-          <Option
-            v-for="(item, index) in newColumnList"
-            :value="item.columnKey"
-            :key="index"
-            >{{ item.columnName }}</Option
+    <Card :bordered="false">
+      <div class="ho_article_contain">
+        <!-- 栏目 -->
+        <template v-if="newColumnList && newColumnList.length != 0">
+          <Select
+            @on-change="selectChange"
+            style="width:150px"
+            v-model="cateKey"
           >
-        </Select>
-      </template>
-      <datePicker @dateValue="getDateValue"></datePicker>
-    </div>
-    <div style="margin-top:20px">
-      <Table stripe :columns="columns" :data="getHotList">
-        <template slot-scope="{ index }" slot="paiming">
-          <div>{{ index + 1 }}</div>
+            <Option
+              v-for="(item, index) in newColumnList"
+              :value="item.columnKey"
+              :key="index"
+              >{{ item.columnName }}</Option
+            >
+          </Select>
         </template>
-      </Table>
-    </div>
-    <div class="pagination_contain">
-      <pagination
-        :total="getNewTotal"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+        <datePicker @dateValue="getDateValue"></datePicker>
+      </div>
+      <div style="margin-top:20px">
+        <Table stripe :columns="columns" :data="getHotList">
+          <template slot-scope="{ index }" slot="paiming">
+            <div>{{ index + 1 }}</div>
+          </template>
+        </Table>
+      </div>
+      <div class="pagination_contain">
+        <pagination
+          :total="getNewTotal"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
+    </Card>
   </div>
 </template>
 

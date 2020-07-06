@@ -1,62 +1,64 @@
 <template>
   <div>
     <platformForm></platformForm>
-    <div class="pl_contain">
-      <div v-for="(item, index) in getPlatFormList" :key="index">
-        <img src="" class="platform_img" />
-        <div>{{ item.platformName }}</div>
+    <Card :bordered="false">
+      <div class="pl_contain">
+        <div v-for="(item, index) in getPlatFormList" :key="index">
+          <img src="" class="platform_img" />
+          <div>{{ item.platformName }}</div>
+        </div>
       </div>
-    </div>
-    <div class="pingtai">
-      平台列表
-      <hr />
-      <Tabs type="card" style="margin-top:20px" @on-click="tabsClick">
-        <TabPane
-          v-for="(tab, index) in getPlatFormList"
-          :key="index"
-          :label="tab.platformName"
-          :name="tab.platformKey"
-        >
-          <Icon
-            type="md-refresh"
-            size="28"
-            @click="jiGouRefresh(tab.platformKey)"
-          />
-          <Table
-            row-key="id"
-            :columns="columns"
-            :data="getJiGouList"
-            :load-data="handleLoadData"
+      <div class="pingtai">
+        平台列表
+        <hr />
+        <Tabs type="card" style="margin-top:20px" @on-click="tabsClick">
+          <TabPane
+            v-for="(tab, index) in getPlatFormList"
+            :key="index"
+            :label="tab.platformName"
+            :name="tab.platformKey"
           >
-            <template slot-scope="{ row }" slot="org">
-              <span>{{ row.orgName || row.columnName }}</span>
-            </template>
-            <template slot-scope="{ row }" slot="delete">
-              <!-- <Button
+            <Icon
+              type="md-refresh"
+              size="28"
+              @click="jiGouRefresh(tab.platformKey)"
+            />
+            <Table
+              row-key="id"
+              :columns="columns"
+              :data="getJiGouList"
+              :load-data="handleLoadData"
+            >
+              <template slot-scope="{ row }" slot="org">
+                <span>{{ row.orgName || row.columnName }}</span>
+              </template>
+              <template slot-scope="{ row }" slot="delete">
+                <!-- <Button
                 type="error"
                 @click="jiGouDelete(row)"
                 v-if="row.children"
               >
                 删除
               </Button> -->
-              <!-- <Icon
+                <!-- <Icon
                 type="md-refresh"
                 size="28"
                 v-if="row.children"
                 @click="cateRefresh(row)"
               /> -->
-              <i-switch
-                v-if="!row.children"
-                @on-change="getSwitchChange(row)"
-                v-model="row.status"
-                :true-value="1"
-                :false-value="0"
-              ></i-switch>
-            </template>
-          </Table>
-        </TabPane>
-      </Tabs>
-    </div>
+                <i-switch
+                  v-if="!row.children"
+                  @on-change="getSwitchChange(row)"
+                  v-model="row.status"
+                  :true-value="1"
+                  :false-value="0"
+                ></i-switch>
+              </template>
+            </Table>
+          </TabPane>
+        </Tabs>
+      </div>
+    </Card>
   </div>
 </template>
 

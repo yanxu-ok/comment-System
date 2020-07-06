@@ -1,6 +1,8 @@
 <template>
   <div>
-    <listCateTable></listCateTable>
+    <Card :bordered="false">
+      <listCateTable></listCateTable>
+    </Card>
   </div>
 </template>
 

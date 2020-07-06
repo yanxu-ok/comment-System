@@ -1,69 +1,71 @@
 <template>
   <div style="margin-top:20px">
-    <Table
-      row-key="id"
-      :columns="columns"
-      :data="getParamsColumnList"
-      border
-      width="1300"
-      style="margin: 0 auto"
-      :highlight-row="true"
-      :load-data="handleLoadData"
-    >
-      <template slot-scope="{ row }" slot="columnName">
-        <span>{{ row.columnName }}</span>
-      </template>
-      <template slot-scope="{ row }" slot="deepSetup">
-        <router-link
-          :to="{ name: 'list-article', query: { articleid: row } }"
-          v-if="row.children.length != 0"
-        >
-          <div style="font-size:16px;">
-            点此查看
-          </div>
-        </router-link>
-      </template>
-      <template slot-scope="{ row, index }" slot="forbid">
-        <i-switch
-          v-model="row.addSetting"
-          :disabled="getSetting.addSetting"
-          @on-change="
-            switchChange({ row, setting: 'addSetting', type: 'column' })
-          "
-          :true-value="0"
-          :false-value="1"
-        />
-      </template>
-      <template slot-scope="{ row, index }" slot="hide">
-        <i-switch
-          v-model="row.hideSetting"
-          :disabled="getSetting.hideSetting"
-          @on-change="
-            switchChange({ row, setting: 'hideSetting', type: 'column' })
-          "
-          :true-value="1"
-          :false-value="0"
-        />
-      </template>
-      <template slot-scope="{ row, index }" slot="gloal">
-        <i-switch
-          v-model="row.releaseSetting"
-          :disabled="getSetting.releaseSetting"
-          @on-change="
-            switchChange({ row, setting: 'releaseSetting', type: 'column' })
-          "
-          :true-value="1"
-          :false-value="0"
-        />
-      </template>
-    </Table>
-    <div class="pagination_contain">
-      <pagination
-        :total="getTotal"
-        :page-size="10"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+    <Card :bordered="false">
+      <Table
+        row-key="id"
+        :columns="columns"
+        :data="getParamsColumnList"
+        border
+        width="1300"
+        style="margin: 0 auto"
+        :highlight-row="true"
+        :load-data="handleLoadData"
+      >
+        <template slot-scope="{ row }" slot="columnName">
+          <span>{{ row.columnName }}</span>
+        </template>
+        <template slot-scope="{ row }" slot="deepSetup">
+          <router-link
+            :to="{ name: 'list-article', query: { articleid: row } }"
+            v-if="row.children.length != 0"
+          >
+            <div style="font-size:16px;">
+              点此查看
+            </div>
+          </router-link>
+        </template>
+        <template slot-scope="{ row, index }" slot="forbid">
+          <i-switch
+            v-model="row.addSetting"
+            :disabled="getSetting.addSetting"
+            @on-change="
+              switchChange({ row, setting: 'addSetting', type: 'column' })
+            "
+            :true-value="0"
+            :false-value="1"
+          />
+        </template>
+        <template slot-scope="{ row, index }" slot="hide">
+          <i-switch
+            v-model="row.hideSetting"
+            :disabled="getSetting.hideSetting"
+            @on-change="
+              switchChange({ row, setting: 'hideSetting', type: 'column' })
+            "
+            :true-value="1"
+            :false-value="0"
+          />
+        </template>
+        <template slot-scope="{ row, index }" slot="gloal">
+          <i-switch
+            v-model="row.releaseSetting"
+            :disabled="getSetting.releaseSetting"
+            @on-change="
+              switchChange({ row, setting: 'releaseSetting', type: 'column' })
+            "
+            :true-value="1"
+            :false-value="0"
+          />
+        </template>
+      </Table>
+      <div class="pagination_contain">
+        <pagination
+          :total="getTotal"
+          :page-size="10"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
+    </Card>
   </div>
 </template>
 

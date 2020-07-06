@@ -1,9 +1,11 @@
 <template>
   <div>
-    <!-- 头部按钮 -->
-    <switchHeader></switchHeader>
-    <hr />
-    <switchTable></switchTable>
+    <Card :bordered="false">
+      <!-- 头部按钮 -->
+      <switchHeader></switchHeader>
+      <hr />
+      <switchTable></switchTable>
+    </Card>
   </div>
 </template>
 

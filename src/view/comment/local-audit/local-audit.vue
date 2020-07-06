@@ -1,19 +1,21 @@
 <template>
   <div class="tabs_contain">
-    <Tabs value="0" @on-click="tabsHandleClick">
-      <TabPane
-        :label="item.label"
-        :name="item.id + ''"
-        v-for="(item, index) in $store.state.comment.tabsList"
-        :key="index"
-      >
-        <!-- 动态渲染组件 -->
-        <component
-          v-if="$store.state.comment.tabsIndex == item.id"
-          :is="currentTab"
-        ></component>
-      </TabPane>
-    </Tabs>
+    <Card :bordered="false">
+      <Tabs value="0" @on-click="tabsHandleClick">
+        <TabPane
+          :label="item.label"
+          :name="item.id + ''"
+          v-for="(item, index) in $store.state.comment.tabsList"
+          :key="index"
+        >
+          <!-- 动态渲染组件 -->
+          <component
+            v-if="$store.state.comment.tabsIndex == item.id"
+            :is="currentTab"
+          ></component>
+        </TabPane>
+      </Tabs>
+    </Card>
   </div>
 </template>
 
