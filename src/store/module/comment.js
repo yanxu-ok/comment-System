@@ -266,6 +266,7 @@ export default {
       }
       return new Promise((resolve, reject) => {
         getReportList(obj).then(res => {
+          commit('setReportList', [])
           commit('setCurrectTotal', res.data.totalCount)
           console.log(res.data, "举报评论列表");
           if (res.data.data == null) {

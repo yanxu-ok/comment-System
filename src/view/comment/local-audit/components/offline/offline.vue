@@ -79,6 +79,7 @@ export default {
       searchValue: "",
       selectValue: "1",
       currectList: "",
+      currect: 1,
       cateList: [
         {
           value: "1",

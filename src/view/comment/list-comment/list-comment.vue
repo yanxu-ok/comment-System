@@ -202,7 +202,7 @@ export default {
                           click: () => {
                             params.row.isHot = 1;
                             _this.upComment({
-                              commentkey: value,
+                              commentkey: params.row,
                               isHot: 0
                             });
                           }
@@ -314,14 +314,15 @@ export default {
       this.updateComment(obj).then(res => {
         console.log(res);
         if (res.data.ok) {
+          this.commentList = [];
           this.$Message.info("操作成功");
-          this.getHomeStationCommentVerify({
+          this.getCommentAllPage({
+            row: this.obj,
             offset: this.currect,
-            status: this.status,
-            pageSize: 10,
-            columnKey: this.getCurrectCateKey,
-            selectIndex: this.selectValue ? this.selectValue : "1",
-            selectValue: this.searchValue
+            status: this.status
+          }).then(res => {
+            this.commentList = res.data.data;
+            this.total = res.data.totalCount;
           });
         } else {
           this.$Message.info("操作失败");
@@ -357,6 +358,7 @@ export default {
     getCurrectPage(currect) {
       this.currect = currect;
       console.log(currect);
+      this.commentList = [];
       this.getCommentAllPage({
         row: this.obj,
         offset: currect,
@@ -423,6 +425,15 @@ export default {
     pass({ idListStr, changeFlag }) {
       this.passOfflineComment({ idListStr, changeFlag }).then(res => {
         if (res.data.ok) {
+          this.commentList = [];
+          this.getCommentAllPage({
+            row: this.obj,
+            offset: this.currect,
+            status: this.status
+          }).then(res => {
+            this.commentList = res.data.data;
+            this.total = res.data.totalCount;
+          });
           this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");
