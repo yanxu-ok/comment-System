@@ -97,7 +97,7 @@ export default [{
         meta: {
           title: '个人主页',
           icon: '',
-          // hideInMenu: true
+          hideInMenu: true
         },
         component: () => import('@/view/comment/user-comment/user-comment.vue')
       }

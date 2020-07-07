@@ -244,6 +244,30 @@ export const getCommentPage = ({
   })
 }
 
+// 查询用户所有的评论列表
+export const getUserCommentPage = ({
+  loginId,
+  orgKey,
+  platformKey,
+  offset,
+  pageSize,
+  columnKey,
+}) => {
+  const data = {
+    loginId,
+    offset,
+    pageSize,
+    columnKey,
+    orgKey,
+    platformKey
+  };
+  return axios.request({
+    url: 'comment/get_home_station_comment_verify',
+    data: new URLSearchParams(data),
+    method: 'POST'
+  })
+}
+
 // 查询黑名单列表
 export const getBlackPage = ({
   platformKey,

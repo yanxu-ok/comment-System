@@ -144,7 +144,25 @@ export default {
                     }
                   },
                   [
-                    h("p", params.row.loginName),
+                    h(
+                      "p",
+                      {
+                        style: {
+                          color: "#526BE3",
+                          marginLeft: "10px",
+                          cursor: "pointer"
+                        },
+                        on: {
+                          click() {
+                            _this.$router.push({
+                              name: "user-comment",
+                              query: { obj: params.row }
+                            });
+                          }
+                        }
+                      },
+                      params.row.loginName
+                    ),
                     h(
                       "div",
                       {
@@ -202,7 +220,6 @@ export default {
                     article_name: true
                   }
                 },
-
                 [
                   h(
                     "div",

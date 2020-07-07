@@ -3,30 +3,18 @@
     <Card class="user_card">
       <div style="width:300px">
         <div class="user_card_div">
-          <img src="" />
+          <img :src="obj.headImg" />
           <div class="user_info">
-            <div>用户名</div>
-            <div>ID:XXXX</div>
-            <div>IP:XXXX</div>
+            <div>{{ obj.loginName }}</div>
+            <div>ID:{{ obj.id }}</div>
+            <div>IP:{{ obj.ip }}</div>
           </div>
         </div>
       </div>
     </Card>
-    <Card :bordered="false">
+    <Card :bordered="false" style="padding:10px">
       <!-- 头部条件 -->
       <div class="pending_contain">
-        <Select
-          v-model="searchValue"
-          style="width:100px;margin-right:50px"
-          @on-change="selectChange"
-        >
-          <Option
-            v-for="item in cateList"
-            :value="item.value"
-            :key="item.value"
-            >{{ item.label }}</Option
-          >
-        </Select>
         <div>
           <Button
             shape="circle"
@@ -59,7 +47,8 @@
           :columns="columns"
           :data="commentList"
           @on-selection-change="tableSelectChange"
-        ></Table>
+        >
+        </Table>
       </div>
       <!-- 分页 -->
       <div class="pagination_contain">
@@ -139,8 +128,7 @@ export default {
         },
         {
           title: "",
-          width: 900,
-          height: 300,
+          width: 500,
           renderHeader: (h, params) => {
             return h("div", {}, params.column.title);
           },
@@ -213,7 +201,7 @@ export default {
                           click: () => {
                             params.row.isHot = 1;
                             _this.upComment({
-                              commentkey: value,
+                              commentkey: params.row,
                               isHot: 0
                             });
                           }
@@ -243,6 +231,44 @@ export default {
                   ])
                 ]
               )
+            ]);
+          }
+        },
+        {
+          title: "评论状态",
+          align: "center",
+          render: (h, params) => {
+            let _this = this;
+            return h("div", {}, [
+              h("div", [
+                h(
+                  "span",
+                  {
+                    style: {
+                      display: params.row.status == 0 ? "block" : "none"
+                    }
+                  },
+                  "待审"
+                ),
+                h(
+                  "span",
+                  {
+                    style: {
+                      display: params.row.status == 1 ? "block" : "none"
+                    }
+                  },
+                  "通过"
+                ),
+                h(
+                  "span",
+                  {
+                    style: {
+                      display: params.row.status == 2 ? "block" : "none"
+                    }
+                  },
+                  "下线"
+                )
+              ])
             ]);
           }
         },
@@ -325,15 +351,15 @@ export default {
       this.updateComment(obj).then(res => {
         console.log(res);
         if (res.data.ok) {
-          this.$Message.info("操作成功");
-          this.getHomeStationCommentVerify({
-            offset: this.currect,
-            status: this.status,
-            pageSize: 10,
-            columnKey: this.getCurrectCateKey,
-            selectIndex: this.selectValue ? this.selectValue : "1",
-            selectValue: this.searchValue
+          this.commentList = [];
+          this.getUserCommentPage({
+            row: this.obj,
+            offset: this.currect
+          }).then(res => {
+            this.commentList = res.data.data;
+            this.total = res.data.totalCount;
           });
+          this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");
         }
@@ -359,19 +385,18 @@ export default {
       "saveComment",
       "saveBlack",
       "getCommentPage",
-      "getCommentAllPage"
+      "getUserCommentPage",
+      "getUserCommentPage"
     ]),
-
     ...mapMutations(["setCurrectCateKey"]),
-
     // 当前页发生变化时
     getCurrectPage(currect) {
       this.currect = currect;
       console.log(currect);
-      this.getCommentAllPage({
+      this.commentList = [];
+      this.getUserCommentPage({
         row: this.obj,
-        offset: currect,
-        status: this.status
+        offset: currect
       }).then(res => {
         this.commentList = res.data.data;
         this.total = res.data.totalCount;
@@ -388,10 +413,9 @@ export default {
     selectChange(value) {
       console.log(value);
       this.status = parseInt(value);
-      this.getCommentAllPage({
+      this.getUserCommentPage({
         row: this.obj,
-        offset: 1,
-        status: this.status
+        offset: 1
       }).then(res => {
         this.commentList = res.data.data;
         this.total = res.data.totalCount;
@@ -416,10 +440,10 @@ export default {
       this.passOfflineAllComment({ idListStr, changeFlag }).then(res => {
         console.log(res);
         if (res.ok) {
-          this.getCommentAllPage({
+          this.commentList = [];
+          this.getUserCommentPage({
             row: this.obj,
-            offset: 1,
-            status: this.status
+            offset: this.currect
           }).then(res => {
             this.commentList = res.data.data;
             this.total = res.data.totalCount;
@@ -434,6 +458,14 @@ export default {
     pass({ idListStr, changeFlag }) {
       this.passOfflineComment({ idListStr, changeFlag }).then(res => {
         if (res.data.ok) {
+          this.commentList = [];
+          this.getUserCommentPage({
+            row: this.obj,
+            offset: this.currect
+          }).then(res => {
+            this.commentList = res.data.data;
+            this.total = res.data.totalCount;
+          });
           this.$Message.info("操作成功");
         } else {
           this.$Message.info("操作失败");
@@ -461,10 +493,9 @@ export default {
           "回复" + this.currectRow.loginName + "：" + this.contentValue
       }).then(res => {
         this.$Message.info("回复成功");
-        this.getCommentAllPage({
+        this.getUserCommentPage({
           row: this.obj,
-          offset: 1,
-          status: this.status
+          offset: 1
         }).then(res => {
           this.commentList = res.data.data;
           this.total = res.data.totalCount;
@@ -482,13 +513,14 @@ export default {
     this.columns[1].title =
       "文章名称:          " + this.$route.query.obj.programName;
     this.obj = this.$route.query.obj;
-    this.getCommentAllPage({
+    this.getUserCommentPage({
       row: this.obj,
-      offset: 1,
-      status: this.status
+      offset: 1
     }).then(res => {
-      this.commentList = res.data.data;
-      this.total = res.data.totalCount;
+      if (res) {
+        this.commentList = res.data.data;
+        this.total = res.data.totalCount;
+      }
     });
   }
 };

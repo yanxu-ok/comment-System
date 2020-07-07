@@ -14,7 +14,8 @@ import {
   deleteBlackByKey,
   getFilterPage,
   saveFilter,
-  deleteFilterByKey
+  deleteFilterByKey,
+  getUserCommentPage
 } from '@/api/comment'
 import {
   getJigouList
@@ -498,6 +499,36 @@ export default {
           console.log(res, "查询评论列表");
           commit('setCurrectCommentTotal', res.data.totalCount)
           commit('setCommentList', res.data.data)
+          resolve(res)
+        })
+      })
+    },
+
+    // 查询用户的所有评论列表
+    getUserCommentPage({
+      commit
+    }, {
+      row,
+      offset
+    }) {
+      console.log(row);
+      let {
+        orgKey,
+        columnKey,
+        platformKey,
+        loginId
+      } = row
+      let obj = {
+        offset,
+        pageSize: 10,
+        orgKey,
+        columnKey,
+        platformKey,
+        loginId
+      }
+      return new Promise((resolve, reject) => {
+        getUserCommentPage(obj).then(res => {
+          console.log(res, "查询用户的所有评论列表");
           resolve(res)
         })
       })
