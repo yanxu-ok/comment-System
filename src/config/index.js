@@ -18,7 +18,11 @@ export default {
    */
   baseUrl: {
     dev: 'http://10.0.117.248:8090',
-    pro: 'http://10.0.117.248:8090'
+    pro: 'manager'
+  },
+  baseUrl1: {
+    dev: 'http://10.0.117.248:8091',
+    pro: 'api'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
