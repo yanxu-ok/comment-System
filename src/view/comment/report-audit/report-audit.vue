@@ -258,6 +258,22 @@ export default {
                     },
                     "文章名：" + params.row.programName
                   ),
+                  h(
+                    "div",
+                    {
+                      style: {
+                        width: "70px",
+                        height: "27px",
+                        "background-color": "blue",
+                        "border-radius": "4px",
+                        color: "white",
+                        "text-align": "center",
+                        "line-height": "27px",
+                        display: params.row.isTop == 1 ? "block" : "none"
+                      }
+                    },
+                    "权威"
+                  ),
                   h("div", "评论时间：" + params.row.createTime)
                 ]
               ),

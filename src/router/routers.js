@@ -100,8 +100,45 @@ export default [{
           hideInMenu: true
         },
         component: () => import('@/view/comment/user-comment/user-comment.vue')
+      },
+      {
+        path: 'chat',
+        name: 'chat',
+        meta: {
+          title: '实时聊天',
+          icon: 'ios-chatbubbles'
+        },
+        component: () => import('@/view/comment/chat/chat.vue')
+      },
+      {
+        path: 'now-chat',
+        name: 'now-chat',
+        meta: {
+          title: '实时聊天内页',
+          icon: '',
+          hideInMenu: true
+        },
+        component: () => import('@/view/comment/chat/components/now-chat/now-chat.vue')
       }
     ]
+  },
+  {
+    path: '/comment-irrigation',
+    name: 'comment-irrigation',
+    meta: {
+      icon: 'md-stats',
+      title: '创新应用'
+    },
+    component: Main,
+    children: [{
+      path: 'irrigation',
+      name: 'irrigation',
+      meta: {
+        title: '评论灌水',
+        icon: 'ios-stats-outline',
+      },
+      component: () => import('@/view/comment-irrigation/comment-irrigation.vue')
+    }]
   },
   {
     path: '/comment-management',

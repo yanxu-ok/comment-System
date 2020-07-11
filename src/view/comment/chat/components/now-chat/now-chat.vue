@@ -1,103 +1,72 @@
 <template>
   <div class="chat">
-    <div class="pending_contain">
-      <div>
-        <!-- 栏目 -->
-        <template v-if="newColumnList && newColumnList.length != 0">
-          <Select
-            @on-change="selectChange"
-            style="width:150px"
-            v-model="cateKey"
+    <Card :bordered="false">
+      <div class="pending_contain">
+        <div>
+          <Button
+            shape="circle"
+            style="margin-right:20px"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 1
+              })
+            "
+            >全部通过</Button
           >
-            <Option
-              v-for="(item, index) in newColumnList"
-              :value="item.columnKey"
-              :key="index"
-              >{{ item.columnName }}</Option
-            >
-          </Select>
-        </template>
-        <!-- 按关键词搜索 -->
-        <i-select
-          v-model="selectValue"
-          @on-change="nameChange"
-          style="width:180px;margin-left:30px"
-        >
-          <i-option
-            v-for="(item, index) in cateList"
-            :value="item.value"
-            :key="index"
-            >{{ item.label }}</i-option
+          <Button
+            shape="circle"
+            @click="
+              allPass({
+                idListStr: currectList,
+                changeFlag: 2
+              })
+            "
+            >全部下线</Button
           >
-        </i-select>
-        <!-- 搜索框 -->
-        <Input v-model="searchValue" placeholder="" style="width: 200px" />
-        <Button type="primary" @click="handleBtnClick">搜索</Button>
+        </div>
       </div>
-      <div>
-        <Button
-          shape="circle"
-          style="margin-right:20px"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 1
-            })
-          "
-          >全部通过</Button
-        >
-        <Button
-          shape="circle"
-          @click="
-            allPass({
-              idListStr: currectList,
-              changeFlag: 2
-            })
-          "
-          >全部下线</Button
-        >
+      <!-- 表格 -->
+      <div class="table_contain">
+        <Table
+          border
+          ref="selection"
+          :columns="columns"
+          :data="getHomeList"
+          @on-selection-change="tableSelectChange"
+        ></Table>
       </div>
-    </div>
-    <!-- 表格 -->
-    <div class="table_contain">
-      <Table
-        border
-        ref="selection"
-        :columns="columns"
-        :data="getHomeList"
-        @on-selection-change="tableSelectChange"
-      ></Table>
-    </div>
-    <!-- 分页 -->
-    <div class="pagination_contain">
-      <pagination
-        :page-size="10"
-        :total="getCurrectTotal"
-        @pageChange="getCurrectPage"
-      ></pagination>
-    </div>
+      <!-- 分页 -->
+      <div class="pagination_contain">
+        <pagination
+          :page-size="10"
+          :total="getCurrectTotal"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
 
-    <Modal v-model="modal1" title="评论列表">
-      <Table :columns="columns1" :data="getCommentList">
-        <template slot-scope="{ row }" slot="proname">
-          <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
-        </template>
-      </Table>
-      <pagination
-        :page-size="10"
-        :total="getCurrectCommentTotal"
-        @pageChange="getCurrectPage1"
-      ></pagination>
-    </Modal>
-    <Modal
-      v-model="modal5"
-      title="回复"
-      width="300"
-      @on-ok="ok"
-      @on-cancel="cancel"
-    >
-      <Input v-model="contentValue" size="small" placeholder="回复内容" />
-    </Modal>
+      <Modal v-model="modal1" title="评论列表">
+        <Table :columns="columns1" :data="getCommentList">
+          <template slot-scope="{ row }" slot="proname">
+            <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
+          </template>
+        </Table>
+        <pagination
+          :page-size="10"
+          :total="getCurrectCommentTotal"
+          @pageChange="getCurrectPage1"
+        ></pagination>
+      </Modal>
+      <Modal
+        v-model="modal5"
+        title="回复"
+        width="300"
+        @on-ok="ok"
+        @on-cancel="cancel"
+      >
+        <Input v-model="contentValue" size="small" placeholder="回复内容" />
+      </Modal>
+    </Card>
   </div>
 </template>
 
@@ -111,31 +80,11 @@ export default {
   },
   data() {
     return {
-      searchValue: "",
-      selectValue: "1",
       modal5: false,
       contentValue: "", //回复的内容
       currectRow: null, //当前行信息
       currectList: "", // 当前选中的数组列表
       currect: 1, //当前页的数据
-      cateList: [
-        {
-          value: "1",
-          label: "按评论关键词"
-        },
-        {
-          value: "2",
-          label: "按用户名"
-        },
-        {
-          value: "3",
-          label: "按用户ID"
-        },
-        {
-          value: "4",
-          label: "按标题关键字"
-        }
-      ],
       cateKey: "",
       modal1: false,
       columns: [
@@ -437,34 +386,11 @@ export default {
     ])
   },
   methods: {
-    // 设置热门评论
-    upComment(obj) {
-      this.updateComment(obj).then(res => {
-        console.log(res);
-        if (res.data.ok) {
-          this.$Message.info("操作成功");
-          this.getHomeStationCommentVerify({
-            offset: this.currect,
-            status: 0,
-            pageSize: 10,
-            columnKey: this.getCurrectCateKey,
-            selectIndex: this.selectValue ? this.selectValue : "1",
-            selectValue: this.searchValue
-          });
-        } else {
-          this.$Message.info("操作失败");
-        }
-      });
-    },
     // 禁言
     jinyanComment(obj) {
       this.saveBlack(obj).then(res => {
         this.$Message.info("禁言成功");
       });
-    },
-    nameChange(value) {
-      console.log(value);
-      this.selectValue = value;
     },
     ...mapActions([
       "getColumnList",
@@ -494,31 +420,6 @@ export default {
     getCurrectPage1(currect) {
       console.log(currect);
       this.getCommentPage({ row: this.currectRow, offset: currect });
-    },
-    //  下拉选择框状态改变时 value 是栏目key,存放当前栏目key
-    selectChange(value) {
-      this.setCurrectCateKey(value);
-      this.cateKey = value;
-      console.log(value, "当前选择的栏目key");
-      this.getHomeStationCommentVerify({
-        offset: 1,
-        status: 0,
-        pageSize: 10,
-        columnKey: this.getCurrectCateKey,
-        selectIndex: this.selectValue ? this.selectValue : "1",
-        selectValue: this.searchValue
-      });
-    },
-    // 搜索按钮点击事件
-    handleBtnClick() {
-      this.getHomeStationCommentVerify({
-        offset: 1,
-        status: 0,
-        pageSize: 10,
-        columnKey: this.getCurrectCateKey,
-        selectIndex: this.selectValue ? this.selectValue : "1",
-        selectValue: this.searchValue
-      });
     },
     // 选中发生变化
     tableSelectChange(selection) {
@@ -597,31 +498,9 @@ export default {
       this.$Message.info("已取消");
     }
   },
-  watch: {
-    // 监听当前机构ID的变化 获取栏目分类列表
-    getCurrectJigouId(newValue, oldValue) {
-      console.log(newValue, oldValue);
-      this.getColumnList(1).then(res => {
-        console.log(res, "监听的当前栏目列表");
-        if (res != null && res.length != 0) {
-          this.cateKey = res[0].columnKey;
-          this.setCurrectCateKey(res[0].columnKey);
-          this.getHomeStationCommentVerify({
-            offset: 1,
-            status: 0,
-            pageSize: 10,
-            columnKey: this.getCurrectCateKey,
-            selectIndex: this.selectValue ? this.selectValue : "1",
-            selectValue: this.searchValue
-          });
-        } else {
-          this.$Message.info("当前没有栏目");
-        }
-      });
-    }
-  },
   // 页面一加载获取栏目列表 设置第一个栏目 然后请求本站列表
   mounted() {
+    this.row = this.$route.query.obj;
     this.getColumnList(1).then(res => {
       console.log(res, "页面加载的栏目列表");
       if (res != null && res.length != 0) {
@@ -644,5 +523,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "./pending-review.less";
+@import "./now-chat.less";
 </style>
