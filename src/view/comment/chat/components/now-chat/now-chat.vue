@@ -3,7 +3,7 @@
     <Card :bordered="false">
       <div class="pending_contain">
         <div>
-          <Button
+          <!-- <Button
             shape="circle"
             style="margin-right:20px"
             @click="
@@ -23,7 +23,7 @@
               })
             "
             >全部下线</Button
-          >
+          > -->
         </div>
       </div>
       <!-- 表格 -->
@@ -86,6 +86,7 @@ export default {
       currectList: "", // 当前选中的数组列表
       currect: 1, //当前页的数据
       cateKey: "",
+      time: null, //定时器
       modal1: false,
       columns: [
         {
@@ -252,60 +253,60 @@ export default {
                     "所属楼层:" + params.row.floorNum + "#"
                   ),
                   h("div", {}, [
-                    h(
-                      "span",
-                      {
-                        on: {
-                          click: () => {
-                            _this.upComment({
-                              commentkey: params.row,
-                              isHot: 1
-                            });
-                          }
-                        },
-                        class: {
-                          floor_contain_hot: true
-                        },
-                        style: {
-                          display:
-                            params.row.isHot == 0 ? "inile-block" : "none"
-                        }
-                      },
-                      "设置为热门评论"
-                    ),
-                    h(
-                      "span",
-                      {
-                        on: {
-                          click: () => {
-                            _this.upComment({
-                              commentkey: params.row,
-                              isHot: 0
-                            });
-                          }
-                        },
-                        class: {
-                          floor_contain_hot: true
-                        },
-                        style: {
-                          display:
-                            params.row.isHot == 1 ? "inile-block" : "none"
-                        }
-                      },
-                      "取消热门评论"
-                    ),
-                    h(
-                      "span",
-                      {
-                        on: {
-                          click() {
-                            // 回复
-                            _this.modalOpen1(params.row);
-                          }
-                        }
-                      },
-                      "回复"
-                    )
+                    // h(
+                    //   "span",
+                    //   {
+                    //     on: {
+                    //       click: () => {
+                    //         _this.upComment({
+                    //           commentkey: params.row,
+                    //           isHot: 1
+                    //         });
+                    //       }
+                    //     },
+                    //     class: {
+                    //       floor_contain_hot: true
+                    //     },
+                    //     style: {
+                    //       display:
+                    //         params.row.isHot == 0 ? "inile-block" : "none"
+                    //     }
+                    //   },
+                    //   "设置为热门评论"
+                    // ),
+                    // h(
+                    //   "span",
+                    //   {
+                    //     on: {
+                    //       click: () => {
+                    //         _this.upComment({
+                    //           commentkey: params.row,
+                    //           isHot: 0
+                    //         });
+                    //       }
+                    //     },
+                    //     class: {
+                    //       floor_contain_hot: true
+                    //     },
+                    //     style: {
+                    //       display:
+                    //         params.row.isHot == 1 ? "inile-block" : "none"
+                    //     }
+                    //   },
+                    //   "取消热门评论"
+                    // ),
+                    // h(
+                    //   "span",
+                    //   {
+                    //     on: {
+                    //       click() {
+                    //         // 回复
+                    //         _this.modalOpen1(params.row);
+                    //       }
+                    //     }
+                    //   },
+                    //   "回复"
+                    // )
                   ])
                 ]
               )
@@ -318,49 +319,49 @@ export default {
           render: (h, params) => {
             let _this = this;
             return h("div", {}, [
-              h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      shape: "circle"
-                    },
-                    on: {
-                      click() {
-                        _this.pass({
-                          idListStr: params.row.commentKey,
-                          changeFlag: 1
-                        });
-                      }
-                    }
-                  },
-                  "通过"
-                )
-              ]),
-              h("div", [
-                h(
-                  "Button",
-                  {
-                    props: {
-                      type: "primary",
-                      shape: "circle"
-                    },
-                    style: {
-                      marginTop: "6px"
-                    },
-                    on: {
-                      click() {
-                        _this.pass({
-                          idListStr: params.row.commentKey,
-                          changeFlag: 2
-                        });
-                      }
-                    }
-                  },
-                  "下线"
-                )
-              ])
+              // h("div", [
+              //   // h(
+              //   //   "Button",
+              //   //   {
+              //   //     props: {
+              //   //       type: "primary",
+              //   //       shape: "circle"
+              //   //     },
+              //   //     on: {
+              //   //       click() {
+              //   //         _this.pass({
+              //   //           idListStr: params.row.commentKey,
+              //   //           changeFlag: 1
+              //   //         });
+              //   //       }
+              //   //     }
+              //   //   },
+              //   //   "通过"
+              //   // )
+              // ]),
+              // h("div", [
+              //   // h(
+              //   //   "Button",
+              //   //   {
+              //   //     props: {
+              //   //       type: "primary",
+              //   //       shape: "circle"
+              //   //     },
+              //   //     style: {
+              //   //       marginTop: "6px"
+              //   //     },
+              //   //     on: {
+              //   //       click() {
+              //   //         _this.pass({
+              //   //           idListStr: params.row.commentKey,
+              //   //           changeFlag: 2
+              //   //         });
+              //   //       }
+              //   //     }
+              //   //   },
+              //   //   "下线"
+              //   // )
+              // ])
             ]);
           }
         }
@@ -409,7 +410,7 @@ export default {
       console.log(currect);
       this.getHomeStationCommentVerify({
         offset: currect,
-        status: 0,
+        status: 1,
         pageSize: 10,
         columnKey: this.getCurrectCateKey,
         selectIndex: this.selectValue ? this.selectValue : "1",
@@ -496,28 +497,29 @@ export default {
     // 点击取消后
     cancel() {
       this.$Message.info("已取消");
+    },
+
+    // 定时器请求函数
+    getCommentAList() {
+      console.log(111);
+      this.getHomeStationCommentVerify({
+        offset: this.currect,
+        status: 1,
+        pageSize: 10,
+        columnKey: this.getCurrectCateKey,
+        selectIndex: this.selectValue ? this.selectValue : "1",
+        selectValue: this.searchValue
+      });
     }
   },
   // 页面一加载获取栏目列表 设置第一个栏目 然后请求本站列表
   mounted() {
     this.row = this.$route.query.obj;
-    this.getColumnList(1).then(res => {
-      console.log(res, "页面加载的栏目列表");
-      if (res != null && res.length != 0) {
-        this.cateKey = res[0].columnKey;
-        this.setCurrectCateKey(res[0].columnKey);
-        this.getHomeStationCommentVerify({
-          offset: 1,
-          status: 0,
-          pageSize: 10,
-          columnKey: this.getCurrectCateKey,
-          selectIndex: this.selectValue ? this.selectValue : "1",
-          selectValue: this.searchValue
-        });
-      } else {
-        this.$Message.info("当前没有栏目");
-      }
-    });
+    this.time = setInterval(this.getCommentAList, 5000);
+  },
+  // 页面销毁定时器
+  destroyed() {
+    clearInterval(this.time);
   }
 };
 </script>

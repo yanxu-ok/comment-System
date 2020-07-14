@@ -7,25 +7,21 @@ import comment from './module/comment'
 import platform from './module/platform'
 import management from './module/management'
 import statistics from './module/statistics'
+import irrigation from './module/irrigation'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-
-  },
-  mutations: {
-    //
-  },
-  actions: {
-    //
-  },
+  state: {},
+  mutations: {},
+  actions: {},
   modules: {
     user,
     app,
     comment,
     platform,
     management,
-    statistics
+    statistics,
+    irrigation
   }
 })

@@ -351,3 +351,12 @@ export const deleteFilterByKey = (filterKey) => {
     method: 'POST'
   })
 }
+
+// 实时聊天 获取文章列表
+export const getPList = (obj) => {
+  return axios1.request({
+    url: 'comment_page/article_list',
+    data: new URLSearchParams(obj),
+    method: 'POST'
+  })
+}

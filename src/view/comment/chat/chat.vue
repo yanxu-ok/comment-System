@@ -2,18 +2,18 @@
   <div class="chat">
     <Card :bordered="false">
       <i-select
-        v-model="selectValue"
+        v-model="cateKey"
         @on-change="nameChange"
         style="width:180px;margin-left:30px"
       >
         <i-option
-          v-for="(item, index) in cateList1"
-          :value="item.value"
+          v-for="(item, index) in newColumnList"
+          :value="item.columnKey"
           :key="index"
-          >{{ item.label }}</i-option
+          >{{ item.columnName }}</i-option
         >
       </i-select>
-      <!-- 按条件搜索 -->
+      <!-- 按条件搜索
       <i-select
         v-model="selectValue"
         @on-change="nameChange"
@@ -25,10 +25,10 @@
           :key="index"
           >{{ item.label }}</i-option
         >
-      </i-select>
+      </i-select> -->
       <!-- 搜索框 -->
-      <Input v-model="searchValue" placeholder="" style="width: 200px" />
-      <Button type="primary" @click="handleBtnClick">搜索</Button>
+      <!-- <Input v-model="searchValue" placeholder="" style="width: 200px" />
+      <Button type="primary" @click="handleBtnClick">搜索</Button> -->
 
       <!-- 表格 -->
       <Table :columns="columns1" :data="data1">
@@ -41,17 +41,31 @@
           <div>发布时间:{{ row.age }}</div>
         </template>
       </Table>
+      <div style="text-align: center;">
+        <pagination
+          :page-size="10"
+          :total="total"
+          @pageChange="getCurrectPage"
+        ></pagination>
+      </div>
     </Card>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import pagination from "_c/pagination";
 export default {
+  components: {
+    pagination
+  },
   data() {
     return {
       searchValue: "",
       selectValue: "",
+      crrectArticleList: [], // 当前文章列表
+      total: 0,
+      cateKey: "",
       cateList: [
         {
           value: "1",
@@ -97,11 +111,26 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters([
+      "getCurrectJigouId",
+      "newColumnList",
+      "getCurrectTotal",
+      "getCurrectCateKey",
+      "getHomeList",
+      "getCurrectCommentTotal",
+      "getCommentList"
+    ])
+  },
   methods: {
+    ...mapMutations(["setCurrectCateKey"]),
+    ...mapActions(["getColumnList", "getPList"]),
     // 搜索按钮事件
     handleBtnClick() {},
     // 下拉改变的
-    nameChange() {},
+    nameChange(value) {
+      console.log(value);
+    },
     // 点击文章跳转
     handleBtnPd(row) {
       this.$router.push({
@@ -110,7 +139,58 @@ export default {
           obj: row
         }
       });
+    },
+    // 当前页变化时
+    getCurrectPage(currect) {
+      this.getPList({
+        page: currect,
+        pageSize: 10
+      }).then(res => {
+        console.log(res);
+        this.crrectArticleList = res;
+      });
     }
+  },
+  watch: {
+    // 监听当前机构ID的变化 获取栏目分类列表
+    getCurrectJigouId(newValue, oldValue) {
+      console.log(newValue, oldValue);
+      this.getColumnList(1).then(res => {
+        console.log(res, "监听的当前栏目列表");
+        if (res != null && res.length != 0) {
+          this.cateKey = res[0].columnKey;
+          this.setCurrectCateKey(res[0].columnKey);
+          this.getPList({
+            page: 1,
+            pageSize: 10
+          }).then(res => {
+            this.crrectArticleList = res;
+            console.log(res);
+          });
+        } else {
+          this.$Message.info("当前没有栏目");
+        }
+      });
+    }
+  },
+  mounted() {
+    // 获取栏目分类列表
+    this.getColumnList(1).then(res => {
+      console.log(res, "页面加载的栏目列表");
+      if (res != null && res.length != 0) {
+        this.cateKey = res[0].columnKey;
+        this.setCurrectCateKey(res[0].columnKey);
+        this.getPList({
+          page: 1,
+          pageSize: 10
+        }).then(res => {
+          this.crrectArticleList = res;
+          console.log(res);
+        });
+      } else {
+        this.$Message.info("当前没有栏目");
+      }
+    });
   }
 };
 </script>

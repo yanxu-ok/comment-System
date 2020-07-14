@@ -117,68 +117,75 @@ export default {
   },
   mounted() {
     // test 先获取用户的身份 然后在根据身份请求相应的平台列表，然后在请求机构列表
-    this.getUser().then(res => {
-      console.log(res, "用户登录信息");
-      if (res != null && this.access == "super") {
-        this.getPlatforms().then(res => {
-          this.setUserNamePlatFormList(res);
-          this.selectValue = this.userNamePlatFormList[0].platformName;
-          this.getCurrectJigouList(
-            this.userNamePlatFormList[0].platformKey
-          ).then(res => {
-            console.log(res, "当前机构列表");
-            if (res.length != 0) {
-              this.selectJValue = res[0].orgName;
-              this.setCurrectJigouId(res[0].orgKey);
-            }
+    this.getUser()
+      .then(res => {
+        console.log(res, "用户登录信息");
+        if (res != null && this.access == "super") {
+          this.getPlatforms().then(res => {
+            this.setUserNamePlatFormList(res);
+            this.selectValue = this.userNamePlatFormList[0].platformName;
+            this.getCurrectJigouList(
+              this.userNamePlatFormList[0].platformKey
+            ).then(res => {
+              console.log(res, "当前机构列表");
+              if (res.length != 0) {
+                this.selectJValue = res[0].orgName;
+                this.setCurrectJigouId(res[0].orgKey);
+              }
+            });
           });
-        });
-      } else if (this.access == "platform_super") {
-        console.log(this.access);
-        //如果是平台管理员的话 根据当前用户的平台key，只显示当前用户所属的平台
-        this.getPlatforms().then(res => {
-          let jiGouId = this.getPlatFormList.findIndex((item, index) => {
-            return item.platformKey == this.getCurrectPlatFormId;
+        } else if (this.access == "platform_super") {
+          console.log(this.access);
+          //如果是平台管理员的话 根据当前用户的平台key，只显示当前用户所属的平台
+          this.getPlatforms().then(res => {
+            let jiGouId = this.getPlatFormList.findIndex((item, index) => {
+              return item.platformKey == this.getCurrectPlatFormId;
+            });
+            let userPlatKey = this.getPlatFormList.slice(jiGouId, jiGouId + 1);
+            console.log(userPlatKey, "当前用户平台key数组");
+            this.setUserNamePlatFormList(userPlatKey);
+            this.selectValue = this.userNamePlatFormList[0].platformName;
+            this.getCurrectJigouList(
+              this.userNamePlatFormList[0].platformKey
+            ).then(res => {
+              console.log(res, "当前机构列表");
+              if (res.length != 0) {
+                this.selectJValue = res[0].orgName;
+                this.setCurrectJigouId(res[0].orgKey);
+              }
+            });
           });
-          let userPlatKey = this.getPlatFormList.slice(jiGouId, jiGouId + 1);
-          console.log(userPlatKey, "当前用户平台key数组");
-          this.setUserNamePlatFormList(userPlatKey);
-          this.selectValue = this.userNamePlatFormList[0].platformName;
-          this.getCurrectJigouList(
-            this.userNamePlatFormList[0].platformKey
-          ).then(res => {
-            console.log(res, "当前机构列表");
-            if (res.length != 0) {
-              this.selectJValue = res[0].orgName;
-              this.setCurrectJigouId(res[0].orgKey);
-            }
-          });
-        });
-      } else if (this.access == "admin" || this.access == "user") {
-        // 设置用户管理员机构key  如果是机构管理员 和 审核管理员
-        // 则根据用户管理员的平台key先获取机构列表，在根据用户的机构key获取当前一个数组
-        console.log(
-          this.getCurrectPlatFormId,
-          this.getCurrectJigouId,
-          "管理员当前的平台id和机构id"
-        );
-        this.getCurrectJigouList(this.getCurrectPlatFormId).then(res => {
-          //获取当前机构列表
-          let jiGouIdIndex = this.getCurrectJiGouList.findIndex(
-            (item, index) => {
-              return item.orgKey == this.getCurrectJigouId;
-            }
+        } else if (this.access == "admin" || this.access == "user") {
+          // 设置用户管理员机构key  如果是机构管理员 和 审核管理员
+          // 则根据用户管理员的平台key先获取机构列表，在根据用户的机构key获取当前一个数组
+          console.log(
+            this.getCurrectPlatFormId,
+            this.getCurrectJigouId,
+            "管理员当前的平台id和机构id"
           );
-          let userJiGou = this.getCurrectJiGouList.slice(
-            jiGouIdIndex,
-            jiGouIdIndex + 1
-          );
-          this.setCurrectJiGouList(userJiGou);
-          this.selectJValue = userJiGou[0].orgName;
-          console.log(this.getCurrectJiGouList, "机构管理员所在的机构");
-        });
-      }
-    });
+          this.getCurrectJigouList(this.getCurrectPlatFormId).then(res => {
+            //获取当前机构列表
+            let jiGouIdIndex = this.getCurrectJiGouList.findIndex(
+              (item, index) => {
+                return item.orgKey == this.getCurrectJigouId;
+              }
+            );
+            let userJiGou = this.getCurrectJiGouList.slice(
+              jiGouIdIndex,
+              jiGouIdIndex + 1
+            );
+            this.setCurrectJiGouList(userJiGou);
+            this.selectJValue = userJiGou[0].orgName;
+            console.log(this.getCurrectJiGouList, "机构管理员所在的机构");
+          });
+        }
+      })
+      .catch(res => {
+        console.log(111);
+
+        this.$Message.info("用户登录信息过期，请重新登录！");
+        console.log(res);
+      });
   }
 };
 </script>

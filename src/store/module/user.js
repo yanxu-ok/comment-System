@@ -137,6 +137,7 @@ export default {
           commit('setUserOrgName', res.data.data.orgName)
           resolve(res.data.data)
         }).catch(err => {
+          console.log(err);
           reject(err)
         })
       })

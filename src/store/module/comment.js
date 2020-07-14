@@ -15,7 +15,8 @@ import {
   getFilterPage,
   saveFilter,
   deleteFilterByKey,
-  getUserCommentPage
+  getUserCommentPage,
+  getPList
 } from '@/api/comment'
 import {
   getJigouList
@@ -657,6 +658,31 @@ export default {
             pageSize: 10,
             offset: 1
           })
+        })
+      })
+    },
+
+
+    // 实时聊天获取文章列表
+    getPList({
+      state,
+      commit,
+      dispatch
+    }, obj) {
+      let {
+        page,
+        pageSize
+      } = obj;
+      let data = {
+        page,
+        pageSize,
+        platformKey: state.currectPlatFormId,
+        columnKey: state.currectCateKey
+      }
+      console.log(data, "获取文章列表");
+      return new Promise((resolve, reject) => {
+        getPList(data).then(res => {
+          resolve(res.data.data)
         })
       })
     }
