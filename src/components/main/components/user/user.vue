@@ -75,7 +75,8 @@ export default {
       "handleLogOut",
       "getCurrectJigouList",
       "getPlatforms",
-      "getUser"
+      "getUser",
+      "getImgToken"
     ]),
     ...mapMutations([
       "setCurrectJigouId",
@@ -119,6 +120,7 @@ export default {
     // test 先获取用户的身份 然后在根据身份请求相应的平台列表，然后在请求机构列表
     this.getUser()
       .then(res => {
+        this.getImgToken();
         console.log(res, "用户登录信息");
         if (res != null && this.access == "super") {
           this.getPlatforms().then(res => {

@@ -31,14 +31,14 @@
       <Button type="primary" @click="handleBtnClick">搜索</Button> -->
 
       <!-- 表格 -->
-      <Table :columns="columns1" :data="data1">
+      <Table :columns="columns1" :data="crrectArticleList">
         <template slot-scope="{ row }" slot="proName">
           <div @click="handleBtnPd(row)" class="name">
-            文章名:{{ row.name }}
+            文章名:{{ row.programName }}
           </div>
         </template>
         <template slot-scope="{ row }" slot="date">
-          <div>发布时间:{{ row.age }}</div>
+          <div>发布时间:{{ row.startTime }}</div>
         </template>
       </Table>
       <div style="text-align: center;">
@@ -100,14 +100,6 @@ export default {
           title: "发布时间",
           slot: "date"
         }
-      ],
-      data1: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03"
-        }
       ]
     };
   },
@@ -130,6 +122,16 @@ export default {
     // 下拉改变的
     nameChange(value) {
       console.log(value);
+      this.setCurrectCateKey(value);
+      this.cateKey = value;
+      console.log(value, "当前选择的栏目key");
+      this.getPList({
+        page: 1,
+        pageSize: 10
+      }).then(res => {
+        this.crrectArticleList = res;
+        console.log(res);
+      });
     },
     // 点击文章跳转
     handleBtnPd(row) {

@@ -42,13 +42,16 @@ export default {
     // 灌水
     save_water({
       state,
-      commit
+      commit,
+      rootState
     }, obj) {
+      obj.columnKey = rootState.comment.currectCateKey;
+      obj.platformKey = rootState.comment.currectPlatFormId
+      obj.orgKey = rootState.comment.currectJigouId
       return new Promise((resolve, reject) => {
         console.log(obj, "灌水的数据");
         save_water(obj).then(res => {
-          console.log(res);
-          // resolve(res.data.data)
+          resolve(res)
         })
       })
     },

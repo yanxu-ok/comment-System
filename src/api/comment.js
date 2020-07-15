@@ -226,13 +226,13 @@ export const getCommentPage = ({
   offset,
   pageSize,
   columnKey,
-  status
+  // status
 }) => {
   const data = {
     programId,
     offset,
     pageSize,
-    status,
+    // status,
     columnKey,
     orgKey,
     platformKey
@@ -356,6 +356,28 @@ export const deleteFilterByKey = (filterKey) => {
 export const getPList = (obj) => {
   return axios1.request({
     url: 'comment_page/article_list',
+    data: new URLSearchParams(obj),
+    method: 'POST'
+  })
+}
+
+// 实时聊天发评论
+export const liveChat = (obj) => {
+  return axios1.request({
+    url: 'comment_page/live_chat',
+    data: new URLSearchParams(obj),
+    method: 'POST'
+  })
+}
+
+// 实时获取token
+export const getImgToken = (obj) => {
+  let {
+    orgId,
+    userId
+  } = obj
+  return axios.request({
+    url: 'get_upload_token',
     data: new URLSearchParams(obj),
     method: 'POST'
   })

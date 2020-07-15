@@ -1,6 +1,14 @@
 <template>
   <div style="width:500px;margin: 0 auto">
     <Card :bordered="false">
+      <i-select v-model="cateKey" @on-change="nameChange" class="slecet">
+        <i-option
+          v-for="(item, index) in newColumnList"
+          :value="item.columnKey"
+          :key="index"
+          >{{ item.columnName }}</i-option
+        >
+      </i-select>
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -102,7 +110,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -116,6 +124,7 @@ export default {
       },
       modal1: false,
       modal2: false,
+      cateKey: "", //当前栏目key
       row: {}, //当前模板行信息
       selectCount: 0, //选择模板的所有条数
       waterContentList: [], //模板内容list
@@ -199,8 +208,34 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters([
+      "getCurrectJigouId",
+      "newColumnList",
+      "getCurrectTotal",
+      "getCurrectCateKey",
+      "getHomeList",
+      "getCurrectCommentTotal",
+      "getCommentList"
+    ])
+  },
   methods: {
-    ...mapActions(["getWaterList", "getWaterContent", "save_water"]),
+    ...mapMutations(["setCurrectCateKey"]),
+    ...mapActions([
+      "getWaterList",
+      "getWaterContent",
+      "save_water",
+      "getColumnList",
+      "getPList"
+    ]),
+
+    // 栏目列表点下拉事件
+    nameChange(value) {
+      this.setCurrectCateKey(value);
+      this.cateKey = value;
+      console.log(value, "当前选择的栏目key");
+    },
+
     // 表单点击事件
     handleSubmit(name) {
       // console.log(this.formValidate);
@@ -219,7 +254,12 @@ export default {
             waterFrequency: parseInt(waterFrequency),
             jsonStr: JSON.stringify(this.waterContentAllList)
           };
-          this.save_water(obj);
+          this.save_water(obj).then(res => {
+            if (res.data.data.ok) {
+              this.$Message.info("灌水成功!");
+            }
+            console.log(res, "灌水");
+          });
         } else {
           this.$Message.error("Fail!");
         }
@@ -322,6 +362,47 @@ export default {
       this.modal2 = !this.modal2;
       // 重新发起请求刷新列表
     }
+  },
+  watch: {
+    // 监听当前机构ID的变化 获取栏目分类列表
+    getCurrectJigouId(newValue, oldValue) {
+      console.log(newValue, oldValue);
+      this.getColumnList(1).then(res => {
+        console.log(res, "监听的当前栏目列表");
+        if (res != null && res.length != 0) {
+          this.cateKey = res[0].columnKey;
+          this.setCurrectCateKey(res[0].columnKey);
+          this.getPList({
+            page: 1,
+            pageSize: 10
+          }).then(res => {
+            this.crrectArticleList = res;
+            console.log(res);
+          });
+        } else {
+          this.$Message.info("当前没有栏目");
+        }
+      });
+    }
+  },
+  mounted() {
+    // 获取栏目分类列表
+    this.getColumnList(1).then(res => {
+      console.log(res, "页面加载的栏目列表");
+      if (res != null && res.length != 0) {
+        this.cateKey = res[0].columnKey;
+        this.setCurrectCateKey(res[0].columnKey);
+        this.getPList({
+          page: 1,
+          pageSize: 10
+        }).then(res => {
+          this.crrectArticleList = res;
+          console.log(res);
+        });
+      } else {
+        this.$Message.info("当前没有栏目");
+      }
+    });
   }
 };
 </script>

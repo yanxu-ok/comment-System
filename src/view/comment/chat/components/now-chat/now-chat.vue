@@ -32,7 +32,7 @@
           border
           ref="selection"
           :columns="columns"
-          :data="getHomeList"
+          :data="homeList"
           @on-selection-change="tableSelectChange"
         ></Table>
       </div>
@@ -45,7 +45,7 @@
         ></pagination>
       </div>
 
-      <Modal v-model="modal1" title="评论列表">
+      <!-- <Modal v-model="modal1" title="评论列表">
         <Table :columns="columns1" :data="getCommentList">
           <template slot-scope="{ row }" slot="proname">
             <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
@@ -56,6 +56,9 @@
           :total="getCurrectCommentTotal"
           @pageChange="getCurrectPage1"
         ></pagination>
+      </Modal> -->
+      <Modal v-model="modal1" title="回复框">
+        <textarea :value="huiFukuang"></textarea>
       </Modal>
       <Modal
         v-model="modal5"
@@ -67,6 +70,14 @@
         <Input v-model="contentValue" size="small" placeholder="回复内容" />
       </Modal>
     </Card>
+    <Upload
+      :action="imgUrl"
+      :format="['jpg', 'jpeg', 'png']"
+      :before-upload="handleBeforeUpload"
+      :on-success="handleSuccess"
+    >
+      <Button icon="ios-cloud-upload-outline">上传图片</Button>
+    </Upload>
   </div>
 </template>
 
@@ -88,6 +99,9 @@ export default {
       cateKey: "",
       time: null, //定时器
       modal1: false,
+      homeList: [],
+      huiFukuang: "", //回复框的内容
+      total: 0, //总数
       columns: [
         {
           type: "selection",
@@ -157,6 +171,21 @@ export default {
                             }
                           },
                           "【禁言】"
+                        ),
+                        h(
+                          "div",
+                          {
+                            style: {
+                              color: "#526BE3",
+                              marginLeft: "10px"
+                            },
+                            on: {
+                              click() {
+                                _this.commentHuiFu(params.row);
+                              }
+                            }
+                          },
+                          "@用户"
                         )
                       ]
                     ),
@@ -366,6 +395,7 @@ export default {
           }
         }
       ],
+      imgTokenUrl: "", //保存图片的url
       columns1: [
         {
           title: "评论列表",
@@ -376,6 +406,21 @@ export default {
     };
   },
   computed: {
+    imgUrl() {
+      console.log(this.getCurrectJigouId, this.$store.state.comment.imgToken);
+
+      let upLoadconfig = {
+        group: "chuangqi",
+        pathConfig: "image",
+        orgid: this.getCurrectJigouId
+      };
+      return (
+        "http://appadmin.iqilu.com/cq-app-upload/upload/attach/file?uploadParam=" +
+        encodeURIComponent(JSON.stringify(upLoadconfig)) +
+        "&token=" +
+        "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJhcHAiOiJtYWxsIiwidGltZSI6MTU5NDc5NzA5MCwiZXhwIjoxNTk1NDAxODkwLCJ1c2VyaWQiOjg4ODgsImlhdCI6MTU5NDc5NzA5MCwib3JnaWQiOiIxIn0.s6MEiF9h1JciERm4dGct5vGE9nc9jx8R4Yt405L3KLE"
+      );
+    },
     ...mapGetters([
       "getCurrectJigouId",
       "newColumnList",
@@ -401,7 +446,10 @@ export default {
       "updateComment",
       "saveComment",
       "saveBlack",
-      "getCommentPage"
+      "getCommentPage",
+      "getChat",
+      "getImgToken",
+      "liveChat"
     ]),
     ...mapMutations(["setCurrectCateKey"]),
     // 当前页发生变化时
@@ -478,45 +526,85 @@ export default {
     // 点击确定后 回复完之后重新刷新列表
     ok() {
       console.log(this.currectRow);
-      this.saveComment({
-        row: this.currectRow,
-        contentValue:
-          "回复" + this.currectRow.loginName + "：" + this.contentValue
-      }).then(res => {
-        this.$Message.info("回复成功");
-        this.getHomeStationCommentVerify({
-          offset: 1,
-          status: 0,
-          pageSize: 10,
-          columnKey: this.currectRow.columnKey,
-          selectIndex: this.selectValue ? this.selectValue : "1",
-          selectValue: this.searchValue
-        });
-      });
+      let imgUrl = {
+        type: "image",
+        url: this.imgTokenUrl
+      };
+      this.liveChat({ row: this.currectRow, imgUrl: JSON.stringify(imgUrl) });
+
+      // this.saveComment({
+      //   row: this.currectRow,
+      //   contentValue:
+      //     "回复" + this.currectRow.loginName + "：" + this.contentValue
+      // }).then(res => {
+      //   this.$Message.info("回复成功");
+      //   this.getHomeStationCommentVerify({
+      //     offset: 1,
+      //     status: 0,
+      //     pageSize: 10,
+      //     columnKey: this.currectRow.columnKey,
+      //     selectIndex: this.selectValue ? this.selectValue : "1",
+      //     selectValue: this.searchValue
+      //   });
+      // });
     },
     // 点击取消后
     cancel() {
       this.$Message.info("已取消");
     },
 
+    // 回复用户
+    commentHuiFu(row) {
+      this.modal1 = !this.modal1;
+      this.currectRow = row;
+    },
+    handleBeforeUpload(file) {
+      console.log(file);
+
+      // let _this = this;
+      // const reader = new FileReader();
+      // reader.readAsDataURL(file);
+      // reader.onload = function() {
+      //   _this.formInline.imgUrl = this.result;
+      // };
+    },
+    //
+    handleSuccess(file) {
+      console.log(file);
+      this.imgTokenUrl = file.data;
+    },
+
     // 定时器请求函数
     getCommentAList() {
       console.log(111);
-      this.getHomeStationCommentVerify({
+      this.getChat({
         offset: this.currect,
         status: 1,
         pageSize: 10,
-        columnKey: this.getCurrectCateKey,
-        selectIndex: this.selectValue ? this.selectValue : "1",
-        selectValue: this.searchValue
+        programId: this.row.programId
+      }).then(res => {
+        this.homeList = res.data.data;
+        this.total = res.data.totalCount;
       });
     }
   },
+
   // 页面一加载获取栏目列表 设置第一个栏目 然后请求本站列表
   mounted() {
     this.row = this.$route.query.obj;
+    console.log(this.row);
+    this.getChat({
+      offset: this.currect,
+      status: 1,
+      pageSize: 10,
+      programId: this.row.programId
+    }).then(res => {
+      this.homeList = res.data.data;
+      this.total = res.data.totalCount;
+    });
     this.time = setInterval(this.getCommentAList, 5000);
   },
+
   // 页面销毁定时器
   destroyed() {
     clearInterval(this.time);

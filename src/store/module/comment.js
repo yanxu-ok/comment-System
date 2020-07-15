@@ -16,7 +16,9 @@ import {
   saveFilter,
   deleteFilterByKey,
   getUserCommentPage,
-  getPList
+  getPList,
+  liveChat,
+  getImgToken
 } from '@/api/comment'
 import {
   getJigouList
@@ -57,6 +59,7 @@ export default {
     currectCommentTotal: null, // 评论总数
     filterList: [], // 过滤词列表
     userOrgName: '', // 用户所在机构名字
+    imgToken: '' //图片的token
   },
   getters: {
     currentTab(state, getters, rootState) {
@@ -153,6 +156,10 @@ export default {
 
     setUserOrgName(state, value) {
       state.userOrgName = value
+    },
+    // 图片token
+    setImgToken(state, value) {
+      state.imgToken = value
     }
   },
   actions: {
@@ -662,7 +669,6 @@ export default {
       })
     },
 
-
     // 实时聊天获取文章列表
     getPList({
       state,
@@ -683,6 +689,85 @@ export default {
       return new Promise((resolve, reject) => {
         getPList(data).then(res => {
           resolve(res.data.data)
+        })
+      })
+    },
+
+    // 定时器 聊天列表
+    getChat({
+      state,
+      commit
+    }, row) {
+      console.log(row);
+      let {
+        programId,
+        status,
+        offset,
+        pageSize
+      } = row
+      let obj = {
+        offset,
+        pageSize,
+        programId,
+        orgKey: state.currectJigouId,
+        columnKey: state.currectCateKey,
+        platformKey: state.currectPlatFormId
+      }
+      return new Promise((resolve, reject) => {
+        getCommentPage(obj).then(res => {
+          console.log(res, "查询聊天列表");
+          resolve(res)
+        })
+      })
+    },
+
+    // 聊天发评论
+    liveChat({
+      state,
+      commit,
+      rootState
+    }, {
+      row,
+      imgUrl
+    }) {
+      console.log(row);
+      let {
+        programId,
+        status,
+      } = row
+      let obj = {
+        programId,
+        orgKey: state.currectJigouId,
+        columnKey: state.currectCateKey,
+        platformKey: state.currectPlatFormId,
+        status,
+        loginName: rootState.user.userName,
+        loginId: rootState.user.userId,
+        imgUrl
+      }
+      return new Promise((resolve, reject) => {
+        liveChat(obj).then(res => {
+          console.log(res, "聊天发评论");
+          resolve(res)
+        })
+      })
+    },
+
+    // 获取图片token
+    getImgToken({
+      state,
+      rootState,
+      commit
+    }, row) {
+      let obj = {
+        orgId: state.getCurrectJigouId,
+        userId: rootState.user.userId
+      }
+      return new Promise((resolve, reject) => {
+        getImgToken(obj).then(res => {
+          // console.log(res, "图片token");
+          // resolve(res.data)
+          commit('setImgToken', res.data)
         })
       })
     }
