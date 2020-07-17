@@ -1,14 +1,17 @@
 <template>
-  <div style="width:500px;margin: 0 auto">
+  <div style="width:500px;margin: 0 auto" class="comment_guanshui">
     <Card :bordered="false">
-      <i-select v-model="cateKey" @on-change="nameChange" class="slecet">
-        <i-option
-          v-for="(item, index) in newColumnList"
-          :value="item.columnKey"
-          :key="index"
-          >{{ item.columnName }}</i-option
-        >
-      </i-select>
+      <div style="display:flex">
+        <span class="span">请选择栏目</span>
+        <i-select v-model="cateKey" @on-change="nameChange" class="slecet">
+          <i-option
+            v-for="(item, index) in newColumnList"
+            :value="item.columnKey"
+            :key="index"
+            >{{ item.columnName }}</i-option
+          >
+        </i-select>
+      </div>
       <Form
         ref="formValidate"
         :model="formValidate"
@@ -67,12 +70,6 @@
       @on-ok="handleSelectOk"
       @on-cancel="cancel"
     >
-      <Button
-        type="primary"
-        @click="handleDeleteMuban"
-        style="margin-top:20px;margin-bottom:10px"
-        >删除模板</Button
-      >
       <Table
         :columns="columns1"
         :data="waterList"
@@ -85,7 +82,13 @@
         </template>
       </Table>
       <Button type="primary" @click="handleZiDingYi" style="margin-top:20px"
-        >自定义模板</Button
+        >新增模板</Button
+      >
+      <Button
+        type="primary"
+        @click="handleDeleteMuban"
+        style="margin-top:20px;margin-left:10px"
+        >删除模板</Button
       >
     </Modal>
     <Modal
@@ -119,6 +122,7 @@
           type="text"
           placeholder="模板名称"
           v-model="row.waterTemplateName"
+          disabled="true"
         />
         <Button type="primary" @click="handleSaveMuban()">保存模板</Button>
       </div>
@@ -126,14 +130,14 @@
 
     <Modal
       v-model="modal3"
-      title="自定义模板"
+      title="新增模板"
       :footer-hide="true"
       @on-cancel="quxiao"
     >
       <div class="muban_name">
         <input type="text" placeholder="模板名称" v-model="waterTemplateName" />
         <Button type="primary" @click="handleSaveMuban('baocun')"
-          >保存模板</Button
+          >新增模板</Button
         >
       </div>
     </Modal>
@@ -307,8 +311,7 @@ export default {
               this.$Message.info("灌水成功!");
             }
           });
-        }
-        else {
+        } else {
           this.$Message.error("Fail!");
         }
       });
@@ -377,6 +380,10 @@ export default {
 
     // 删除模板
     handleDeleteMuban() {
+      if (this.selectList.length == 0) {
+        this.$Message.info("请选择模板");
+        return;
+      }
       console.log(this.selectList);
       let waterTemplateKeyListStr = ""; //灌水模板的list
       this.selectList.forEach((item, index) => {
@@ -446,6 +453,10 @@ export default {
 
     // 删除行
     handleDeleteRow() {
+      if (this.selectContent.length == 0) {
+        this.$Message.info("请选择至少一项");
+        return;
+      }
       if (this.selectContent.length != 0) {
         this.selectContent.forEach((item, index) => {
           this.waterContentList.forEach((i, j) => {
