@@ -64,12 +64,7 @@
         </FormItem>
       </Form>
     </Card>
-    <Modal
-      v-model="modal1"
-      title="模板选择"
-      @on-ok="handleSelectOk"
-      @on-cancel="cancel"
-    >
+    <Modal v-model="modal1" title="模板选择">
       <Table
         :columns="columns1"
         :data="waterList"
@@ -81,15 +76,26 @@
           </div>
         </template>
       </Table>
-      <Button type="primary" @click="handleZiDingYi" style="margin-top:20px"
-        >新增模板</Button
-      >
-      <Button
-        type="primary"
-        @click="handleDeleteMuban"
-        style="margin-top:20px;margin-left:10px"
-        >删除模板</Button
-      >
+      <div slot="footer" style="display:flex;justify-content: space-between;">
+        <div style="display:flex">
+          <Button type="primary" @click="handleZiDingYi">新增模板</Button>
+          <Button
+            type="primary"
+            @click="handleDeleteMuban"
+            style="margin-left:10px"
+            >删除模板</Button
+          >
+        </div>
+        <div>
+          <Button @click="cancel" style="margin-left:10px">取消</Button>
+          <Button
+            type="primary"
+            @click="handleSelectOk"
+            style="margin-left:10px"
+            >确定</Button
+          >
+        </div>
+      </div>
     </Modal>
     <Modal
       v-model="modal2"
@@ -171,6 +177,7 @@ export default {
       selectList: [], //已选择的模板
       waterContentAllList: [], //选择所有的模板list
       waterTemplateName: "",
+      arr: [], // 当前要添加的数组
       ruleValidate: {
         //表单验证数据
         name: [
@@ -343,6 +350,7 @@ export default {
     // 取消
     cancel() {
       this.selectList = [];
+      this.modal1 = !this.modal1;
       this.selectCount = 0;
       this.$Message.info("已取消");
     },
@@ -354,6 +362,7 @@ export default {
 
     // 选择完模板后确定
     handleSelectOk() {
+      this.modal1 = !this.modal1;
       //组织选了哪些模板  闭包实现
       if (this.selectList.length != 0) {
         let List = [];
@@ -435,6 +444,7 @@ export default {
     handleBtnMuBanId(row) {
       console.log(row);
       this.row = row;
+      this.arr = []; //每次点击打开对话框时把数组清空
       this.modal2 = !this.modal2;
       // 发起请求当前模板下的列表
       this.getWaterContent(this.row.waterTemplateKey).then(res => {
@@ -445,10 +455,19 @@ export default {
 
     // 添加行
     handleAddRow() {
-      this.waterContentList.push({
+      let data = {
         waterContent: "",
         waterKey: newGuid()
-      });
+      };
+      this.arr.push(data);
+
+      console.log(this.arr);
+
+      this.waterContentList = [...this.waterContentList, data];
+      // this.waterContentList.push({
+      //   waterContent: "",
+      //   waterKey: newGuid()
+      // });
     },
 
     // 删除行
@@ -465,7 +484,16 @@ export default {
             }
           });
         });
-        console.log(this.waterContentList);
+
+        this.selectContent.forEach((item, index) => {
+          this.arr.forEach((i, j) => {
+            if (item.waterKey == i.waterKey) {
+              this.arr.splice(j, 1);
+            }
+          });
+        });
+
+        console.log(this.waterContentList, this.arr, "总的和需要保存的");
 
         let waterRecordKeyListStr = "";
         this.selectContent.forEach((item, index) => {
@@ -480,11 +508,14 @@ export default {
         };
         this.deleteWaterContent(obj).then(res => {
           if (res.data.ok) {
-            this.$Message.info("删除成功");
-            this.getWaterContent(this.row.waterTemplateKey).then(res => {
-              console.log(res, "灌水内容");
-              this.waterContentList = res;
-            });
+            if (res.data.comment != "删除失败，没有该数据") {
+              this.getWaterContent(this.row.waterTemplateKey).then(res => {
+                this.$Message.info("删除成功");
+                console.log(res);
+              });
+            } else {
+              this.$Message.info("删除成功");
+            }
           } else {
             this.$Message.info("删除失败");
           }
@@ -512,7 +543,7 @@ export default {
         // 重新发起请求刷新列表
         this.abc = 0;
         let res = [];
-        this.waterContentList.forEach((item, index) => {
+        this.arr.forEach((item, index) => {
           res.push({
             waterContent: item.waterContent,
             waterTemplateKey: this.row.waterTemplateKey,

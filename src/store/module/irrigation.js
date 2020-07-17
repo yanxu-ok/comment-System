@@ -116,7 +116,6 @@ export default {
       return new Promise((resolve, reject) => {
         deleteWaterContent(obj).then(res => {
           resolve(res)
-          console.log(res, "删除灌水内容");
         })
       })
     },
