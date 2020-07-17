@@ -22,7 +22,7 @@
                 type="primary"
                 size="small"
                 style="margin-right: 5px"
-                @click="deleteBlackByKey(row)"
+                @click="deleteBlack(row)"
                 >恢复</Button
               >
             </template>
@@ -93,6 +93,14 @@ export default {
       "saveBlack",
       "getBlackPage"
     ]),
+    // 恢复黑名单
+    deleteBlack(row) {
+      this.deleteBlackByKey(row).then(res => {
+        if (res.data.ok) {
+          this.$Message.info("恢复成功");
+        }
+      });
+    },
     // 当前页发生变化时
     getCurrectPage(currect) {
       console.log(currect);

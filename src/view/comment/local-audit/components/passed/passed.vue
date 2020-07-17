@@ -31,6 +31,9 @@
             >{{ item.label }}</i-option
           >
         </i-select>
+        <!-- 搜索框 -->
+        <Input v-model="searchValue" placeholder="" style="width: 200px" />
+        <Button type="primary" @click="handleBtnClick">搜索</Button>
       </div>
       <div>
         <Button
@@ -66,7 +69,22 @@
     <Modal v-model="modal1" title="评论列表">
       <Table :columns="columns1" :data="getCommentList">
         <template slot-scope="{ row }" slot="proname">
-          <div>{{ row.floorNum + "#" }}{{ row.commentContent }}</div>
+          <template v-if="row.status != 2">
+            <div style="display:flex;align-items: center;">
+              {{ row.floorNum + "#" }} {{ row.commentContent }}
+              <template
+                v-if="row.imgUrl && row.imgUrl.length != 0 && row.imgUrl != ''"
+              >
+                <img
+                  :src="JSON.parse(row.imgUrl)[0].url"
+                  style="width:50px;height:50px"
+                />
+              </template>
+            </div>
+          </template>
+          <template v-else>
+            <div>{{ row.floorNum + "#" }} 该评论已被下线</div>
+          </template>
         </template>
       </Table>
       <pagination
@@ -107,11 +125,19 @@ export default {
       cateList: [
         {
           value: "1",
-          label: "按评论列表查看"
+          label: "按评论关键词"
         },
         {
           value: "2",
-          label: "按文章列表查看"
+          label: "按用户名"
+        },
+        {
+          value: "3",
+          label: "按用户ID"
+        },
+        {
+          value: "4",
+          label: "按标题关键字"
         }
       ],
       cateKey: "",
@@ -125,7 +151,7 @@ export default {
         {
           title: "用户详情",
           key: "user",
-          width: 270,
+          width: 370,
           render: (h, params) => {
             let _this = this;
             return h(
@@ -199,7 +225,16 @@ export default {
                   style: {
                     width: "77px",
                     height: "77px",
-                    margin: "5px 10px 25px 10px"
+                    margin: "5px 10px 25px 10px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click() {
+                      _this.$router.push({
+                        name: "user-comment",
+                        query: { obj: params.row }
+                      });
+                    }
                   }
                 })
               ]
@@ -246,7 +281,7 @@ export default {
                         color: "white",
                         "text-align": "center",
                         "line-height": "27px",
-                        display: params.row.isTop == 1 ? "block" : "none"
+                        display: params.row.isAuthority == 1 ? "block" : "none"
                       }
                     },
                     "权威"
@@ -257,11 +292,42 @@ export default {
               h(
                 "div",
                 {
-                  class: {
-                    article_content: true
+                  style: {
+                    display: "flex"
                   }
                 },
-                params.row.commentContent
+                [
+                  h(
+                    "div",
+                    {
+                      class: {
+                        article_content: true
+                      }
+                    },
+                    params.row.commentContent
+                  ),
+                  h("img", {
+                    domProps: {
+                      src:
+                        params.row.imgUrl &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? JSON.parse(params.row.imgUrl)[0].url
+                          : "",
+                      title: "img"
+                    },
+                    style: {
+                      display:
+                        params.row.imgUrl &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? "block"
+                          : "none",
+                      width: "100px",
+                      height: "100px"
+                    }
+                  })
+                ]
               ),
               h(
                 "div",
@@ -401,6 +467,10 @@ export default {
     // 禁言
     jinyanComment(obj) {
       this.saveBlack(obj).then(res => {
+        if (res.data.totalCount === -1) {
+          this.$Message.info("用户已被禁言");
+          return;
+        }
         this.$Message.info("禁言成功");
       });
     },
@@ -437,7 +507,11 @@ export default {
       "saveBlack",
       "getCommentPage"
     ]),
-    ...mapMutations(["setCurrectCateKey"]),
+    ...mapMutations([
+      "setCurrectCateKey",
+      "setCommentList",
+      "setCurrectCommentTotal"
+    ]),
     // 当前页发生变化时
     getCurrectPage(currect) {
       this.currect = currect;
@@ -454,7 +528,7 @@ export default {
     // 评论列表下拉页
     getCurrectPage1(currect) {
       console.log(currect);
-      this.getCommentPage({ row, offset: currect });
+      this.getCommentPage({ row: this.currectRow, offset: currect });
     },
     //  下拉选择框状态改变时 value 是栏目key,存放当前栏目key
     selectChange(value) {
@@ -527,6 +601,8 @@ export default {
     modalOpen(row) {
       this.modal1 = !this.modal1;
       this.currectRow = row;
+      this.setCommentList([]);
+      this.setCurrectCommentTotal(0);
       this.getCommentPage({ row: this.currectRow, offset: 1 });
     },
     // 回复模态框

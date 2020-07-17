@@ -31,6 +31,9 @@
             >{{ item.label }}</i-option
           >
         </i-select>
+        <!-- 搜索框 -->
+        <Input v-model="searchValue" placeholder="" style="width: 200px" />
+        <Button type="primary" @click="handleBtnClick">搜索</Button>
       </div>
       <div>
         <Button
@@ -83,11 +86,19 @@ export default {
       cateList: [
         {
           value: "1",
-          label: "按评论列表查看"
+          label: "按评论关键词"
         },
         {
           value: "2",
-          label: "按文章列表查看"
+          label: "按用户名"
+        },
+        {
+          value: "3",
+          label: "按用户ID"
+        },
+        {
+          value: "4",
+          label: "按标题关键字"
         }
       ],
       modal1: false,
@@ -100,7 +111,7 @@ export default {
         },
         {
           title: "用户详情",
-          width: 270,
+          width: 370,
           render: (h, params) => {
             let _this = this;
             return h(
@@ -174,7 +185,16 @@ export default {
                   style: {
                     width: "77px",
                     height: "77px",
-                    margin: "5px 10px 25px 10px"
+                    margin: "5px 10px 25px 10px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click() {
+                      _this.$router.push({
+                        name: "user-comment",
+                        query: { obj: params.row }
+                      });
+                    }
                   }
                 })
               ]
@@ -220,7 +240,7 @@ export default {
                         color: "white",
                         "text-align": "center",
                         "line-height": "27px",
-                        display: params.row.isTop == 1 ? "block" : "none"
+                        display: params.row.isAuthority == 1 ? "block" : "none"
                       }
                     },
                     "权威"
@@ -231,11 +251,42 @@ export default {
               h(
                 "div",
                 {
-                  class: {
-                    article_content: true
+                  style: {
+                    display: "flex"
                   }
                 },
-                params.row.commentContent
+                [
+                  h(
+                    "div",
+                    {
+                      class: {
+                        article_content: true
+                      }
+                    },
+                    params.row.commentContent
+                  ),
+                  h("img", {
+                    domProps: {
+                      src:
+                        params.row.imgUrl &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? JSON.parse(params.row.imgUrl)[0].url
+                          : "",
+                      title: "img"
+                    },
+                    style: {
+                      display:
+                        params.row.imgUrl &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? "block"
+                          : "none",
+                      width: "100px",
+                      height: "100px"
+                    }
+                  })
+                ]
               )
             ]);
           }
@@ -291,6 +342,10 @@ export default {
     // 禁言
     jinyanComment(obj) {
       this.saveBlack(obj).then(res => {
+        if (res.data.totalCount === -1) {
+          this.$Message.info("用户已被禁言");
+          return;
+        }
         this.$Message.info("禁言成功");
       });
     },
@@ -359,11 +414,6 @@ export default {
         columnKey: this.getCurrectCateKey,
         selectIndex: this.selectValue ? this.selectValue : "1",
         selectValue: this.searchValue
-      }).then(res => {
-        console.log(res);
-        if (res == null || res.length == 0) {
-          this.$Message.info("当前无数据");
-        }
       });
     },
     // 选中发生变化

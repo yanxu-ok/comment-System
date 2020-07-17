@@ -40,7 +40,7 @@
       <div class="pagination_contain">
         <pagination
           :page-size="10"
-          :total="getCurrectTotal"
+          :total="total"
           @pageChange="getCurrectPage"
         ></pagination>
       </div>
@@ -57,27 +57,26 @@
           @pageChange="getCurrectPage1"
         ></pagination>
       </Modal> -->
-      <Modal v-model="modal1" title="回复框">
-        <textarea :value="huiFukuang"></textarea>
+      <Modal v-model="modal1" title="回复框" @on-ok="ok" @on-cancel="cancel">
+        <template v-if="currectRow">
+          <span>{{ "@" + currectRow.loginName + "：" }}</span>
+        </template>
+        <input type="text" v-model="huiFukuang" placeholder="回复内容" />
+        <Upload
+          :action="imgUrl"
+          :format="['jpg', 'jpeg', 'png']"
+          :before-upload="handleBeforeUpload"
+          :on-success="handleSuccess"
+        >
+          <div style="width: 58px;height:58px;line-height: 58px;">
+            <Icon type="ios-camera" size="20"></Icon>
+          </div>
+        </Upload>
       </Modal>
-      <Modal
-        v-model="modal5"
-        title="回复"
-        width="300"
-        @on-ok="ok"
-        @on-cancel="cancel"
-      >
+      <Modal v-model="modal5" title="回复" width="300">
         <Input v-model="contentValue" size="small" placeholder="回复内容" />
       </Modal>
     </Card>
-    <Upload
-      :action="imgUrl"
-      :format="['jpg', 'jpeg', 'png']"
-      :before-upload="handleBeforeUpload"
-      :on-success="handleSuccess"
-    >
-      <Button icon="ios-cloud-upload-outline">上传图片</Button>
-    </Upload>
   </div>
 </template>
 
@@ -105,12 +104,12 @@ export default {
       columns: [
         {
           type: "selection",
-          width: 60,
+          width: 100,
           align: "center"
         },
         {
           title: "用户详情",
-          width: 270,
+          width: 300,
           render: (h, params) => {
             let _this = this;
             return h(
@@ -171,23 +170,22 @@ export default {
                             }
                           },
                           "【禁言】"
-                        ),
-                        h(
-                          "div",
-                          {
-                            style: {
-                              color: "#526BE3",
-                              marginLeft: "10px"
-                            },
-                            on: {
-                              click() {
-                                _this.commentHuiFu(params.row);
-                              }
-                            }
-                          },
-                          "@用户"
                         )
                       ]
+                    ),
+                    h(
+                      "div",
+                      {
+                        style: {
+                          color: "#526BE3"
+                        },
+                        on: {
+                          click() {
+                            _this.commentHuiFu(params.row);
+                          }
+                        }
+                      },
+                      "@他（她）"
                     ),
                     h("p", "IP:" + params.row.ip)
                   ]
@@ -199,7 +197,16 @@ export default {
                   style: {
                     width: "77px",
                     height: "77px",
-                    margin: "5px 10px 25px 10px"
+                    margin: "5px 10px 25px 10px",
+                    cursor: "pointer"
+                  },
+                  on: {
+                    click() {
+                      _this.$router.push({
+                        name: "user-comment",
+                        query: { obj: params.row }
+                      });
+                    }
                   }
                 })
               ]
@@ -208,7 +215,6 @@ export default {
         },
         {
           title: "评论详情",
-          width: 800,
           render: (h, params) => {
             let _this = this;
             return h("div", [
@@ -256,11 +262,40 @@ export default {
               h(
                 "div",
                 {
-                  class: {
-                    article_content: true
+                  style: {
+                    display: "flex"
                   }
                 },
-                params.row.commentContent
+                [
+                  h(
+                    "div",
+                    {
+                      class: {
+                        article_content: true
+                      }
+                    },
+                    params.row.commentContent
+                  ),
+                  h("img", {
+                    domProps: {
+                      src:
+                        JSON.parse(params.row.imgUrl) &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? JSON.parse(params.row.imgUrl)[0].url
+                          : "",
+                      title: "img"
+                    },
+                    style: {
+                      display:
+                        JSON.parse(params.row.imgUrl) &&
+                        JSON.parse(params.row.imgUrl) != "" &&
+                        JSON.parse(params.row.imgUrl).length != 0
+                          ? "block"
+                          : "none"
+                    }
+                  })
+                ]
               ),
               h(
                 "div",
@@ -268,132 +303,132 @@ export default {
                   class: {
                     floor_contain: true
                   }
-                },
-                [
-                  h(
-                    "div",
-                    {
-                      on: {
-                        click() {
-                          _this.modalOpen(params.row);
-                        }
-                      }
-                    },
-                    "所属楼层:" + params.row.floorNum + "#"
-                  ),
-                  h("div", {}, [
-                    // h(
-                    //   "span",
-                    //   {
-                    //     on: {
-                    //       click: () => {
-                    //         _this.upComment({
-                    //           commentkey: params.row,
-                    //           isHot: 1
-                    //         });
-                    //       }
-                    //     },
-                    //     class: {
-                    //       floor_contain_hot: true
-                    //     },
-                    //     style: {
-                    //       display:
-                    //         params.row.isHot == 0 ? "inile-block" : "none"
-                    //     }
-                    //   },
-                    //   "设置为热门评论"
-                    // ),
-                    // h(
-                    //   "span",
-                    //   {
-                    //     on: {
-                    //       click: () => {
-                    //         _this.upComment({
-                    //           commentkey: params.row,
-                    //           isHot: 0
-                    //         });
-                    //       }
-                    //     },
-                    //     class: {
-                    //       floor_contain_hot: true
-                    //     },
-                    //     style: {
-                    //       display:
-                    //         params.row.isHot == 1 ? "inile-block" : "none"
-                    //     }
-                    //   },
-                    //   "取消热门评论"
-                    // ),
-                    // h(
-                    //   "span",
-                    //   {
-                    //     on: {
-                    //       click() {
-                    //         // 回复
-                    //         _this.modalOpen1(params.row);
-                    //       }
-                    //     }
-                    //   },
-                    //   "回复"
-                    // )
-                  ])
-                ]
+                }
+                // [
+                //   h(
+                //     "div",
+                //     {
+                //       on: {
+                //         click() {
+                //           _this.modalOpen(params.row);
+                //         }
+                //       }
+                //     },
+                //     "所属楼层:" + params.row.floorNum + "#"
+                //   ),
+                //   h("div", {}, [
+                //     // h(
+                //     //   "span",
+                //     //   {
+                //     //     on: {
+                //     //       click: () => {
+                //     //         _this.upComment({
+                //     //           commentkey: params.row,
+                //     //           isHot: 1
+                //     //         });
+                //     //       }
+                //     //     },
+                //     //     class: {
+                //     //       floor_contain_hot: true
+                //     //     },
+                //     //     style: {
+                //     //       display:
+                //     //         params.row.isHot == 0 ? "inile-block" : "none"
+                //     //     }
+                //     //   },
+                //     //   "设置为热门评论"
+                //     // ),
+                //     // h(
+                //     //   "span",
+                //     //   {
+                //     //     on: {
+                //     //       click: () => {
+                //     //         _this.upComment({
+                //     //           commentkey: params.row,
+                //     //           isHot: 0
+                //     //         });
+                //     //       }
+                //     //     },
+                //     //     class: {
+                //     //       floor_contain_hot: true
+                //     //     },
+                //     //     style: {
+                //     //       display:
+                //     //         params.row.isHot == 1 ? "inile-block" : "none"
+                //     //     }
+                //     //   },
+                //     //   "取消热门评论"
+                //     // ),
+                //     // h(
+                //     //   "span",
+                //     //   {
+                //     //     on: {
+                //     //       click() {
+                //     //         // 回复
+                //     //         _this.modalOpen1(params.row);
+                //     //       }
+                //     //     }
+                //     //   },
+                //     //   "回复"
+                //     // )
+                //   ])
+                // ]
               )
             ]);
           }
-        },
-        {
-          title: "操作",
-          align: "center",
-          render: (h, params) => {
-            let _this = this;
-            return h("div", {}, [
-              // h("div", [
-              //   // h(
-              //   //   "Button",
-              //   //   {
-              //   //     props: {
-              //   //       type: "primary",
-              //   //       shape: "circle"
-              //   //     },
-              //   //     on: {
-              //   //       click() {
-              //   //         _this.pass({
-              //   //           idListStr: params.row.commentKey,
-              //   //           changeFlag: 1
-              //   //         });
-              //   //       }
-              //   //     }
-              //   //   },
-              //   //   "通过"
-              //   // )
-              // ]),
-              // h("div", [
-              //   // h(
-              //   //   "Button",
-              //   //   {
-              //   //     props: {
-              //   //       type: "primary",
-              //   //       shape: "circle"
-              //   //     },
-              //   //     style: {
-              //   //       marginTop: "6px"
-              //   //     },
-              //   //     on: {
-              //   //       click() {
-              //   //         _this.pass({
-              //   //           idListStr: params.row.commentKey,
-              //   //           changeFlag: 2
-              //   //         });
-              //   //       }
-              //   //     }
-              //   //   },
-              //   //   "下线"
-              //   // )
-              // ])
-            ]);
-          }
         }
+        // {
+        //   title: "操作",
+        //   align: "center",
+        //   render: (h, params) => {
+        //     let _this = this;
+        //     return h("div", {}, [
+        //       // h("div", [
+        //       //   // h(
+        //       //   //   "Button",
+        //       //   //   {
+        //       //   //     props: {
+        //       //   //       type: "primary",
+        //       //   //       shape: "circle"
+        //       //   //     },
+        //       //   //     on: {
+        //       //   //       click() {
+        //       //   //         _this.pass({
+        //       //   //           idListStr: params.row.commentKey,
+        //       //   //           changeFlag: 1
+        //       //   //         });
+        //       //   //       }
+        //       //   //     }
+        //       //   //   },
+        //       //   //   "通过"
+        //       //   // )
+        //       // ]),
+        //       // h("div", [
+        //       //   // h(
+        //       //   //   "Button",
+        //       //   //   {
+        //       //   //     props: {
+        //       //   //       type: "primary",
+        //       //   //       shape: "circle"
+        //       //   //     },
+        //       //   //     style: {
+        //       //   //       marginTop: "6px"
+        //       //   //     },
+        //       //   //     on: {
+        //       //   //       click() {
+        //       //   //         _this.pass({
+        //       //   //           idListStr: params.row.commentKey,
+        //       //   //           changeFlag: 2
+        //       //   //         });
+        //       //   //       }
+        //       //   //     }
+        //       //   //   },
+        //       //   //   "下线"
+        //       //   // )
+        //       // ])
+        //     ]);
+        //   }
+        // }
       ],
       imgTokenUrl: "", //保存图片的url
       columns1: [
@@ -408,7 +443,6 @@ export default {
   computed: {
     imgUrl() {
       console.log(this.getCurrectJigouId, this.$store.state.comment.imgToken);
-
       let upLoadconfig = {
         group: "chuangqi",
         pathConfig: "image",
@@ -435,6 +469,10 @@ export default {
     // 禁言
     jinyanComment(obj) {
       this.saveBlack(obj).then(res => {
+        if (res.data.totalCount === -1) {
+          this.$Message.info("用户已被禁言");
+          return;
+        }
         this.$Message.info("禁言成功");
       });
     },
@@ -456,13 +494,14 @@ export default {
     getCurrectPage(currect) {
       this.currect = currect;
       console.log(currect);
-      this.getHomeStationCommentVerify({
-        offset: currect,
+      this.getChat({
+        offset: this.currect,
         status: 1,
         pageSize: 10,
-        columnKey: this.getCurrectCateKey,
-        selectIndex: this.selectValue ? this.selectValue : "1",
-        selectValue: this.searchValue
+        programId: this.row.programId
+      }).then(res => {
+        this.homeList = res.data.data;
+        this.total = res.data.totalCount;
       });
     },
     // 评论列表下拉页
@@ -516,7 +555,7 @@ export default {
     modalOpen(row) {
       this.modal1 = !this.modal1;
       this.currectRow = row;
-      this.getCommentPage({ row: this.currectRow, offset: 1 });
+      // this.getCommentPage({ row: this.currectRow, offset: 1 });
     },
     // 回复模态框
     modalOpen1(row) {
@@ -526,10 +565,18 @@ export default {
     // 点击确定后 回复完之后重新刷新列表
     ok() {
       console.log(this.currectRow);
-      let imgUrl = {
+      let comment = {
+        commentContent: "@" + this.currectRow.loginName + "：" + this.huiFukuang
+      };
+      Object.assign(this.currectRow, comment);
+      let imgUrl = [];
+      let img = {
         type: "image",
         url: this.imgTokenUrl
       };
+      imgUrl.push(img);
+      console.log(imgUrl);
+
       this.liveChat({ row: this.currectRow, imgUrl: JSON.stringify(imgUrl) });
 
       // this.saveComment({
@@ -558,9 +605,8 @@ export default {
       this.modal1 = !this.modal1;
       this.currectRow = row;
     },
-    handleBeforeUpload(file) {
-      console.log(file);
 
+    handleBeforeUpload(file) {
       // let _this = this;
       // const reader = new FileReader();
       // reader.readAsDataURL(file);
@@ -570,8 +616,9 @@ export default {
     },
     //
     handleSuccess(file) {
+      this.imgTokenUrl = "";
       console.log(file);
-      this.imgTokenUrl = file.data;
+      this.imgTokenUrl = file.data.url;
     },
 
     // 定时器请求函数

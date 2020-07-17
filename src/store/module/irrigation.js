@@ -2,18 +2,17 @@ import {
   getWaterList,
   getWaterContent,
   save_water,
-  save_water_record
+  save_water_record,
+  deleteWaterTemplate,
+  saveWaterTemplate,
+  saveWaterContent,
+  deleteWaterContent
 } from '@/api/irrigation'
-
 
 export default {
   state: {},
-  getters: {
-
-  },
-  mutations: {
-
-  },
+  getters: {},
+  mutations: {},
   actions: {
     // 灌水模板列表
     getWaterList({
@@ -67,6 +66,58 @@ export default {
         //   console.log(res);
         //   // resolve(res.data.data)
         // })
+      })
+    },
+
+    // 删除灌水模板
+    deleteWaterTemplate({
+      state,
+      commit
+    }, obj) {
+      return new Promise((resolve, reject) => {
+        deleteWaterTemplate(obj).then(res => {
+          resolve(res)
+          console.log(res);
+        })
+      })
+    },
+
+    // 新增灌输模板
+    saveWaterTemplate({
+      state,
+      commit
+    }, obj) {
+      return new Promise((resolve, reject) => {
+        saveWaterTemplate(obj).then(res => {
+          resolve(res)
+          console.log(res);
+        })
+      })
+    },
+
+    // 新增灌水内容
+    saveWaterContent({
+      state,
+      commit
+    }, obj) {
+      return new Promise((resolve, reject) => {
+        saveWaterContent(obj).then(res => {
+          resolve(res)
+          console.log(res, "灌输内容");
+        })
+      })
+    },
+
+    // 删除灌水内容
+    deleteWaterContent({
+      state,
+      commit
+    }, obj) {
+      return new Promise((resolve, reject) => {
+        deleteWaterContent(obj).then(res => {
+          resolve(res)
+          console.log(res, "删除灌水内容");
+        })
       })
     },
   }

@@ -67,6 +67,12 @@
       @on-ok="handleSelectOk"
       @on-cancel="cancel"
     >
+      <Button
+        type="primary"
+        @click="handleDeleteMuban"
+        style="margin-top:20px;margin-bottom:10px"
+        >删除模板</Button
+      >
       <Table
         :columns="columns1"
         :data="waterList"
@@ -82,28 +88,53 @@
         >自定义模板</Button
       >
     </Modal>
-    <Modal v-model="modal2" title="自定义模板">
+    <Modal
+      v-model="modal2"
+      title="自定义模板"
+      :footer-hide="true"
+      @on-cancel="quxiao"
+    >
       <Button @click="handleAddRow" style="margin-bottom:20px">添加行</Button>
       <Button
         @click="handleDeleteRow"
         style="margin-left:20px;margin-bottom:20px"
         >删除行</Button
       >
-      <Table :columns="columns2" :data="waterContentList">
+      <Table
+        :columns="columns2"
+        :data="waterContentList"
+        @on-selection-change="handleZdySelectChange"
+      >
         <template slot-scope="{ index }" slot="index">
           {{ index + 1 }}
         </template>
-        <template slot-scope="{ row }" slot="input">
-          <textarea :value="row.waterContent" rows="2" cols="50" />
+        <template slot-scope="{ row, index }" slot="input">
+          <!-- <textarea v-model="row.waterContent" rows="2" cols="50" /> -->
+          <!-- <div>{{ row.waterContent }}</div> -->
+          <input type="text" v-model="waterContentList[index].waterContent" />
         </template>
       </Table>
       <div class="muban_name">
         <input
           type="text"
-          :value="row.waterTemplateName"
           placeholder="模板名称"
+          v-model="row.waterTemplateName"
         />
-        <Button type="primary" @click="handleSaveMuban">保存模板</Button>
+        <Button type="primary" @click="handleSaveMuban()">保存模板</Button>
+      </div>
+    </Modal>
+
+    <Modal
+      v-model="modal3"
+      title="自定义模板"
+      :footer-hide="true"
+      @on-cancel="quxiao"
+    >
+      <div class="muban_name">
+        <input type="text" placeholder="模板名称" v-model="waterTemplateName" />
+        <Button type="primary" @click="handleSaveMuban('baocun')"
+          >保存模板</Button
+        >
       </div>
     </Modal>
   </div>
@@ -111,6 +142,7 @@
 
 <script>
 import { mapActions, mapMutations, mapState, mapGetters } from "vuex";
+import { newGuid } from "@/libs/tools";
 export default {
   data() {
     return {
@@ -122,8 +154,11 @@ export default {
         pinlv: "",
         type: ""
       },
+      flag: true,
+      modal3: false,
       modal1: false,
       modal2: false,
+      selectContent: [],
       cateKey: "", //当前栏目key
       row: {}, //当前模板行信息
       selectCount: 0, //选择模板的所有条数
@@ -131,6 +166,7 @@ export default {
       waterList: [], //模板列表list
       selectList: [], //已选择的模板
       waterContentAllList: [], //选择所有的模板list
+      waterTemplateName: "",
       ruleValidate: {
         //表单验证数据
         name: [
@@ -197,6 +233,11 @@ export default {
       ],
       columns2: [
         {
+          type: "selection",
+          width: 60,
+          align: "center"
+        },
+        {
           width: 60,
           align: "center",
           slot: "index"
@@ -226,7 +267,11 @@ export default {
       "getWaterContent",
       "save_water",
       "getColumnList",
-      "getPList"
+      "getPList",
+      "deleteWaterTemplate",
+      "saveWaterTemplate",
+      "saveWaterContent",
+      "deleteWaterContent"
     ]),
 
     // 栏目列表点下拉事件
@@ -245,7 +290,7 @@ export default {
             name: programId,
             type: waterType,
             pinlv: waterRate,
-            city: waterFrequency
+            count: waterFrequency
           } = this.formValidate;
           let obj = {
             programId,
@@ -254,21 +299,26 @@ export default {
             waterFrequency: parseInt(waterFrequency),
             jsonStr: JSON.stringify(this.waterContentAllList)
           };
+          console.log(obj);
+
           this.save_water(obj).then(res => {
-            if (res.data.data.ok) {
+            console.log(res, "灌水");
+            if (res.data.ok) {
               this.$Message.info("灌水成功!");
             }
-            console.log(res, "灌水");
           });
-        } else {
+        }
+        else {
           this.$Message.error("Fail!");
         }
       });
     },
+
     // 重置
     handleReset(name) {
       this.$refs[name].resetFields();
     },
+
     //打开模板对话框
     handleMubanModal() {
       // 获取所有的模板
@@ -279,17 +329,24 @@ export default {
         this.waterList = res;
       });
     },
+
     // 自定义模板对话框
     handleZiDingYi() {
       this.row = [];
       this.waterContentList = [];
-      this.modal2 = !this.modal2;
+      this.modal3 = !this.modal3;
     },
+
     // 取消
     cancel() {
       this.selectList = [];
       this.selectCount = 0;
       this.$Message.info("已取消");
+    },
+
+    // 自定义对话框消失
+    quxiao() {
+      this.flag = !this.flag;
     },
 
     // 选择完模板后确定
@@ -318,6 +375,29 @@ export default {
       }
     },
 
+    // 删除模板
+    handleDeleteMuban() {
+      console.log(this.selectList);
+      let waterTemplateKeyListStr = ""; //灌水模板的list
+      this.selectList.forEach((item, index) => {
+        if (index == this.selectList.length - 1) {
+          waterTemplateKeyListStr += item.waterTemplateKey;
+        } else {
+          waterTemplateKeyListStr += item.waterTemplateKey + ",";
+        }
+      });
+      this.deleteWaterTemplate({ waterTemplateKeyListStr }).then(res => {
+        console.log(res);
+        if (res.data.ok) {
+          this.$Message.info("删除成功");
+          this.getWaterList().then(res => {
+            console.log(res, "灌水模板列表");
+            this.waterList = res;
+          });
+        }
+      });
+    },
+
     // 多选框发生变化时
     handleSelectChange(selection) {
       if (selection.length == 0) {
@@ -334,6 +414,16 @@ export default {
       this.formValidate.city = this.selectCount + "";
     },
 
+    // 自定义多选框发生变化时
+    handleZdySelectChange(selection) {
+      if (selection.length == 0) {
+        this.selectCount = [];
+        return;
+      }
+      this.selectContent = selection;
+      console.log(this.selectContent);
+    },
+
     // 点击模板名称时打开自定义模板对话框
     handleBtnMuBanId(row) {
       console.log(row);
@@ -345,22 +435,89 @@ export default {
         this.waterContentList = res;
       });
     },
+
     // 添加行
     handleAddRow() {
       this.waterContentList.push({
-        name: "",
-        content: ""
+        waterContent: "",
+        waterKey: newGuid()
       });
     },
+
     // 删除行
     handleDeleteRow() {
-      this.waterContentList.splice(this.waterContentList.length - 1, 1);
+      if (this.selectContent.length != 0) {
+        this.selectContent.forEach((item, index) => {
+          this.waterContentList.forEach((i, j) => {
+            if (item.waterKey == i.waterKey) {
+              this.waterContentList.splice(j, 1);
+            }
+          });
+        });
+        console.log(this.waterContentList);
+
+        let waterRecordKeyListStr = "";
+        this.selectContent.forEach((item, index) => {
+          if (index == this.selectContent.length - 1) {
+            waterRecordKeyListStr += item.waterKey;
+          } else {
+            waterRecordKeyListStr += item.waterKey + ",";
+          }
+        });
+        let obj = {
+          waterRecordKeyListStr
+        };
+        this.deleteWaterContent(obj).then(res => {
+          if (res.data.ok) {
+            this.$Message.info("删除成功");
+            this.getWaterContent(this.row.waterTemplateKey).then(res => {
+              console.log(res, "灌水内容");
+              this.waterContentList = res;
+            });
+          } else {
+            this.$Message.info("删除失败");
+          }
+        });
+      }
     },
+
     // 保存模板
-    handleSaveMuban() {
-      // 关闭当前对话框
-      this.modal2 = !this.modal2;
-      // 重新发起请求刷新列表
+    handleSaveMuban(str) {
+      if (str == "baocun") {
+        this.modal3 = !this.modal3;
+        this.saveWaterTemplate({
+          waterTemplateName: this.waterTemplateName
+        }).then(res => {
+          if (res.data.ok) {
+            this.$Message.info("添加成功");
+            this.getWaterList().then(res => {
+              this.waterList = res;
+            });
+          }
+        });
+      } else {
+        // 关闭当前对话框
+        this.modal2 = !this.modal2;
+        // 重新发起请求刷新列表
+        this.abc = 0;
+        let res = [];
+        this.waterContentList.forEach((item, index) => {
+          res.push({
+            waterContent: item.waterContent,
+            waterTemplateKey: this.row.waterTemplateKey,
+            orderNum: index + 1
+          });
+        });
+        console.log(res);
+        let obj = {
+          jsonStr: JSON.stringify(res)
+        };
+        this.saveWaterContent(obj).then(res => {
+          if (res.data.ok) {
+            this.$Message.info("保存成功");
+          }
+        });
+      }
     }
   },
   watch: {

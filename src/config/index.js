@@ -16,13 +16,22 @@ export default {
   /**
    * @description api请求基础路径
    */
+  // baseUrl: {
+  //   dev: 'http://10.0.117.248:8090',
+  //   pro: 'manager'
+  // },
+  // baseUrl1: {
+  //   dev: 'http://10.0.117.248:8091',
+  //   pro: 'api'
+  // },
+
   baseUrl: {
     dev: 'http://10.0.117.248:8090',
-    pro: 'manager'
+    pro: 'http://10.0.117.248:8090'
   },
   baseUrl1: {
     dev: 'http://10.0.117.248:8091',
-    pro: 'api'
+    pro: 'http://10.0.117.248:8091'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

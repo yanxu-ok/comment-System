@@ -46,9 +46,44 @@ export const save_water = (obj) => {
 
 // 清除灌水评论
 export const save_water_record = (obj) => {
-
   return axios.request({
-    url: url,
+    url: 'water/delete_water_template',
+    method: 'post',
+    data: new URLSearchParams(obj),
+  })
+}
+
+// 删除灌水模板接口
+export const deleteWaterTemplate = (obj) => {
+  return axios.request({
+    url: "water/delete_water_template",
+    method: 'post',
+    data: new URLSearchParams(obj),
+  })
+}
+
+// 新增灌输模板
+export const saveWaterTemplate = (obj) => {
+  return axios.request({
+    url: "water/save_water_template",
+    method: 'post',
+    data: new URLSearchParams(obj),
+  })
+}
+
+// 新增灌水内容
+export const saveWaterContent = (obj) => {
+  return axios.request({
+    url: "water/save_water_content",
+    method: 'post',
+    data: new URLSearchParams(obj),
+  })
+}
+
+// 删除灌水内容
+export const deleteWaterContent = (obj) => {
+  return axios.request({
+    url: "water/delete_water_content",
     method: 'post',
     data: new URLSearchParams(obj),
   })

@@ -183,8 +183,6 @@ export default {
         }
       })
       .catch(res => {
-        console.log(111);
-
         this.$Message.info("用户登录信息过期，请重新登录！");
         console.log(res);
       });

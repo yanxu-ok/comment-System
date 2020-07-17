@@ -18,7 +18,9 @@ import {
   getUserCommentPage,
   getPList,
   liveChat,
-  getImgToken
+  getImgToken,
+  getChat,
+  getCommentAllPage
 } from '@/api/comment'
 import {
   getJigouList
@@ -166,8 +168,10 @@ export default {
     // 标签页点击事件
     tabsHandleClick({
       state,
-      dispatch
+      dispatch,
+      commit
     }, value) {
+      commit('setHomeList', []);
       state.tabsIndex = value;
       value = parseInt(value)
       console.log(value);
@@ -213,6 +217,7 @@ export default {
         })
       })
     },
+
     // 获取本站评论审核
     getHomeStationCommentVerify({
       state,
@@ -233,6 +238,7 @@ export default {
         columnKey,
         loginName: selectIndex == "2" ? selectValue : '',
         loginId: selectIndex == "3" ? selectValue : '',
+        programName: selectIndex == '4' ? selectValue : '',
         orgKey: state.currectJigouId,
         platformKey: state.currectPlatFormId
       }
@@ -491,7 +497,8 @@ export default {
         orgKey,
         columnKey,
         platformKey,
-        status
+        status,
+        commentKey
       } = row
       let obj = {
         offset,
@@ -500,7 +507,8 @@ export default {
         orgKey,
         columnKey,
         platformKey,
-        status
+        status,
+        commentKey
       }
       return new Promise((resolve, reject) => {
         getCommentPage(obj).then(res => {
@@ -567,7 +575,7 @@ export default {
         status
       }
       return new Promise((resolve, reject) => {
-        getCommentPage(obj).then(res => {
+        getCommentAllPage(obj).then(res => {
           console.log(res, "查询所有的评论列表");
           resolve(res)
         })
@@ -603,8 +611,6 @@ export default {
       commit,
       dispatch
     }, obj) {
-      console.log(obj);
-      console.log(state.currectPlatFormId);
       return new Promise((resolve, reject) => {
         deleteBlackByKey(obj.blackKey).then(res => {
           console.log(res, "黑名单恢复");
@@ -612,6 +618,8 @@ export default {
             platFormId: state.currectPlatFormId,
             offset: 1,
             pageSize: 10,
+          }).then(res => {
+            resolve(res)
           })
         })
       })
@@ -628,6 +636,7 @@ export default {
           console.log(res, "过滤词列表");
           commit('setFilterList', res.data.data)
           commit('setCurrectCommentTotal', res.data.totalCount)
+          resolve(res)
         })
       })
     },
@@ -714,7 +723,7 @@ export default {
         platformKey: state.currectPlatFormId
       }
       return new Promise((resolve, reject) => {
-        getCommentPage(obj).then(res => {
+        getChat(obj).then(res => {
           console.log(res, "查询聊天列表");
           resolve(res)
         })
@@ -734,13 +743,16 @@ export default {
       let {
         programId,
         status,
+        commentContent,
+        ip
       } = row
       let obj = {
         programId,
+        ip,
+        commentContent,
         orgKey: state.currectJigouId,
         columnKey: state.currectCateKey,
         platformKey: state.currectPlatFormId,
-        status,
         loginName: rootState.user.userName,
         loginId: rootState.user.userId,
         imgUrl

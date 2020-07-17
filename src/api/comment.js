@@ -25,6 +25,7 @@ export const getHomeStationCommentVerify = ({
   platformKey,
   loginName,
   loginId,
+  programName
 }) => {
   const data = {
     offset,
@@ -36,6 +37,7 @@ export const getHomeStationCommentVerify = ({
     commentContent,
     loginName,
     loginId,
+    programName
   };
   return axios.request({
     url: 'comment/get_home_station_comment_verify',
@@ -218,7 +220,7 @@ export const saveBlack = ({
   })
 }
 
-// 查询评论列表
+// 查询文章内评论列表
 export const getCommentPage = ({
   programId,
   orgKey,
@@ -226,16 +228,66 @@ export const getCommentPage = ({
   offset,
   pageSize,
   columnKey,
-  // status
+  commentKey
 }) => {
   const data = {
     programId,
     offset,
     pageSize,
-    // status,
+    columnKey,
+    orgKey,
+    platformKey,
+    commentKey
+  };
+  return axios.request({
+    url: 'comment/get_building_comment',
+    data: new URLSearchParams(data),
+    method: 'POST'
+  })
+}
+
+// 实时聊天定时刷新
+export const getChat = ({
+  programId,
+  orgKey,
+  platformKey,
+  offset,
+  pageSize,
+  columnKey
+}) => {
+  const data = {
+    programId,
+    offset,
+    pageSize,
     columnKey,
     orgKey,
     platformKey
+  };
+  return axios.request({
+    url: 'comment/get_home_station_comment_verify',
+    data: new URLSearchParams(data),
+    method: 'POST'
+  })
+}
+
+// 实时聊天定时刷新
+export const getCommentAllPage = ({
+  programId,
+  orgKey,
+  platformKey,
+  offset,
+  pageSize,
+  columnKey,
+  status
+}) => {
+  const data = {
+    programId,
+    offset,
+    pageSize,
+    columnKey,
+    orgKey,
+    platformKey,
+    status
   };
   return axios.request({
     url: 'comment/get_home_station_comment_verify',
