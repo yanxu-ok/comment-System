@@ -81,7 +81,8 @@ export default {
     ...mapMutations([
       "setCurrectJigouId",
       "setUserNamePlatFormList",
-      "setCurrectJiGouList"
+      "setCurrectJiGouList",
+      "setHomeList"
     ]),
     logout() {
       this.handleLogOut().then(() => {
@@ -101,8 +102,11 @@ export default {
       let platformKey = this.getPlatFormList[platformKeyIndex].platformKey;
       this.getCurrectJigouList(platformKey).then(res => {
         if (res.length != 0) {
+          this.setHomeList([]);
           this.setCurrectJigouId(res[0].orgKey);
           this.selectJValue = res[0].orgName;
+        } else {
+          this.setHomeList([]);
         }
       });
     },
@@ -123,15 +127,20 @@ export default {
         console.log(res, "用户登录信息");
         if (res != null && this.access == "super") {
           this.getPlatforms().then(res => {
+            console.log(res);
             this.setUserNamePlatFormList(res);
-            this.selectValue = this.userNamePlatFormList[0].platformName;
-            this.getCurrectJigouList(
-              this.userNamePlatFormList[0].platformKey
-            ).then(res => {
+            res.forEach(element => {
+              if (element.platformKey == this.getCurrectPlatFormId) {
+                this.selectValue = element.platformName;
+              }
+            });
+            // this.selectValue = this.userNamePlatFormList[0].platformName;
+            this.getCurrectJigouList(this.getCurrectPlatFormId).then(res => {
               console.log(res, "当前机构列表");
               if (res.length != 0) {
-                this.selectJValue = res[0].orgName;
-                this.setCurrectJigouId(res[0].orgKey);
+                // this.selectJValue = res[0].orgName;
+                // this.setCurrectJigouId(res[0].orgKey);
+                this.selectJValue = this.getCurrectJigouId;
               }
             });
           });
@@ -151,8 +160,9 @@ export default {
             ).then(res => {
               console.log(res, "当前机构列表");
               if (res.length != 0) {
-                this.selectJValue = res[0].orgName;
-                this.setCurrectJigouId(res[0].orgKey);
+                // this.selectJValue = res[0].orgName;
+                this.selectJValue = this.getCurrectJigouId;
+                // this.setCurrectJigouId(res[0].orgKey);
               }
             });
           });
