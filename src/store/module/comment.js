@@ -772,14 +772,15 @@ export default {
       commit
     }, row) {
       let obj = {
-        orgId: state.getCurrectJigouId,
+        orgId: state.currectJigouId,
         userId: rootState.user.userId
       }
       return new Promise((resolve, reject) => {
         getImgToken(obj).then(res => {
           // console.log(res, "图片token");
-          // resolve(res.data)
+          // 
           commit('setImgToken', res.data)
+          resolve(res.data)
         })
       })
     }

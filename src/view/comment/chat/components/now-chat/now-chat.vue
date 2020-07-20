@@ -452,7 +452,7 @@ export default {
         "http://appadmin.iqilu.com/cq-app-upload/upload/attach/file?uploadParam=" +
         encodeURIComponent(JSON.stringify(upLoadconfig)) +
         "&token=" +
-        "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJhcHAiOiJtYWxsIiwidGltZSI6MTU5NDc5NzA5MCwiZXhwIjoxNTk1NDAxODkwLCJ1c2VyaWQiOjg4ODgsImlhdCI6MTU5NDc5NzA5MCwib3JnaWQiOiIxIn0.s6MEiF9h1JciERm4dGct5vGE9nc9jx8R4Yt405L3KLE"
+        this.$store.state.comment.imgToken
       );
     },
     ...mapGetters([
@@ -604,6 +604,9 @@ export default {
     commentHuiFu(row) {
       this.modal1 = !this.modal1;
       this.currectRow = row;
+      this.getImgToken().then(res => {
+        console.log(res);
+      });
     },
 
     handleBeforeUpload(file) {
