@@ -286,8 +286,8 @@ export const getShijain = () => {
   var mm = date.getMinutes();
   //秒
   var ss = date.getSeconds();
-  // var rq = year + "-" + month + "-" + day + "-" + hh + ":" + mm + ":" + ss;
-  var rq = year + "-" + month + "-" + day;
+  var rq = year + "-" + month + " " + day + "-" + hh + ":" + mm + ":" + ss;
+  // var rq = year + "-" + month + "-" + day;
   return rq;
 }
 

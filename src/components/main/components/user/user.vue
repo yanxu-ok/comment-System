@@ -23,7 +23,7 @@
       </Dropdown>
     </template>
 
-    <template v-if="getCurrectJiGouList.length != 0">
+    <!-- <template v-if="getCurrectJiGouList.length != 0">
       <Dropdown @on-click="jiGouHandleClick">
         <a href="javascript:void(0)">
           {{ selectJValue }}
@@ -39,15 +39,14 @@
           >
         </DropdownMenu>
       </Dropdown>
-    </template>
-    <!-- <template v-if="getCurrectJiGouList.length != 0">
+    </template> -->
+    <template v-if="getCurrectJiGouList.length != 0">
       <Select
         v-model="selectJValue"
         filterable
-        remote
-        :remote-method="remoteMethod1"
         :loading="loading1"
         @on-change="jiGouHandleClick"
+        class="select"
       >
         <Option
           v-for="(option, index) in getCurrectJiGouList"
@@ -56,7 +55,7 @@
           >{{ option.orgName }}</Option
         >
       </Select>
-    </template> -->
+    </template>
 
     <Icon type="md-home" :size="18" />
   </div>
@@ -85,9 +84,9 @@ export default {
   data() {
     return {
       selectPValue: "",
-      selectJValue: "",
+      selectJValue: "1213123",
       selectValue: "",
-      inputValue: "",
+      // inputValue: "124444444",
       loading1: false
     };
   },
@@ -125,7 +124,10 @@ export default {
         if (res.length != 0) {
           this.setHomeList([]);
           this.setCurrectJigouId(res[0].orgKey);
-          this.selectJValue = res[0].orgName;
+          console.log(res[0].orgName);
+
+          // this.selectJValue = res[0].orgName;
+          this.selectJValue = res[0].orgKey;
         } else {
           this.setHomeList([]);
         }
@@ -134,16 +136,15 @@ export default {
     // 机构点击事件 改变当前机构ID
     jiGouHandleClick(name) {
       console.log(name);
-
       this.selectJValue = name;
-      let jiGouId = this.getCurrectJiGouList.findIndex((item, index) => {
-        return item.orgName == name;
-      });
-      let jiGouKey = this.getCurrectJiGouList[jiGouId].orgKey;
-      this.setCurrectJigouId(jiGouKey);
+      // let jiGouId = this.getCurrectJiGouList.findIndex((item, index) => {
+      //   return item.orgName == name;
+      // });
+      // let jiGouKey = this.getCurrectJiGouList[jiGouId].orgKey;
+      this.setCurrectJigouId(name);
     },
 
-    // 远程搜索的事件
+    // 远程搜索的事件  暂时还没用
     remoteMethod1() {}
   },
   mounted() {
@@ -166,6 +167,8 @@ export default {
               if (res.length != 0) {
                 // this.selectJValue = res[0].orgName;
                 // this.setCurrectJigouId(res[0].orgKey);
+                console.log(this.getCurrectJigouId);
+
                 this.selectJValue = this.getCurrectJigouId;
               }
             });
@@ -212,7 +215,7 @@ export default {
               jiGouIdIndex + 1
             );
             this.setCurrectJiGouList(userJiGou);
-            this.selectJValue = userJiGou[0].orgName;
+            this.selectJValue = userJiGou[0].orgKey;
             console.log(this.getCurrectJiGouList, "机构管理员所在的机构");
           });
         }
