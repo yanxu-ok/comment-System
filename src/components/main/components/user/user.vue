@@ -34,11 +34,30 @@
             :name="item.orgName"
             v-for="(item, index) in getCurrectJiGouList"
             :key="index"
-            >{{ item.orgName }}</DropdownItem
+          >
+            {{ item.orgName }}</DropdownItem
           >
         </DropdownMenu>
       </Dropdown>
     </template>
+    <!-- <template v-if="getCurrectJiGouList.length != 0">
+      <Select
+        v-model="selectJValue"
+        filterable
+        remote
+        :remote-method="remoteMethod1"
+        :loading="loading1"
+        @on-change="jiGouHandleClick"
+      >
+        <Option
+          v-for="(option, index) in getCurrectJiGouList"
+          :value="option.orgKey"
+          :key="index"
+          >{{ option.orgName }}</Option
+        >
+      </Select>
+    </template> -->
+
     <Icon type="md-home" :size="18" />
   </div>
 </template>
@@ -67,7 +86,9 @@ export default {
     return {
       selectPValue: "",
       selectJValue: "",
-      selectValue: ""
+      selectValue: "",
+      inputValue: "",
+      loading1: false
     };
   },
   methods: {
@@ -112,13 +133,18 @@ export default {
     },
     // 机构点击事件 改变当前机构ID
     jiGouHandleClick(name) {
+      console.log(name);
+
       this.selectJValue = name;
       let jiGouId = this.getCurrectJiGouList.findIndex((item, index) => {
         return item.orgName == name;
       });
       let jiGouKey = this.getCurrectJiGouList[jiGouId].orgKey;
       this.setCurrectJigouId(jiGouKey);
-    }
+    },
+
+    // 远程搜索的事件
+    remoteMethod1() {}
   },
   mounted() {
     // test 先获取用户的身份 然后在根据身份请求相应的平台列表，然后在请求机构列表
@@ -192,8 +218,17 @@ export default {
         }
       })
       .catch(res => {
-        this.$Message.info("用户登录信息过期，请重新登录！");
-        console.log(res);
+        this.$Message.info("用户登录信息过期");
+        console.log(process.env.NODE_ENV, window.location);
+        if (window.location.href.includes("http://10.0.117.248:8092")) {
+          window.location.href =
+            "http://chuangqiadm.test.qiludev.com/cq-admin/index.html#/login";
+        } else if (window.location.href.includes("app-comment")) {
+          window.location.href =
+            "http://appadmin.iqilu.com/cq-admin/index.html#/login";
+        } else {
+          return;
+        }
       });
   }
 };

@@ -2,10 +2,10 @@
   <div>
     <div class="ho_article_contain">
       <!-- 栏目 -->
-      <template v-if="columnList && columnList.length != 0">
+      <template v-if="newColumnList && newColumnList.length != 0">
         <Select @on-change="selectChange" style="width:150px" v-model="colKey">
           <Option
-            v-for="(item, index) in columnList"
+            v-for="(item, index) in newColumnList"
             :value="item.columnKey"
             :key="index"
             >{{ item.columnName }}</Option
@@ -64,9 +64,14 @@ export default {
       colKey: ""
     };
   },
-  props: ["columnList"],
   computed: {
-    ...mapGetters(["getNewTotal1", "getFloorDataList", "getCurrectCateKey"])
+    ...mapGetters([
+      "getNewTotal1",
+      "getFloorDataList",
+      "getCurrectCateKey",
+      "newColumnList",
+      "getCurrectJigouId"
+    ])
   },
   methods: {
     // 时间变化
@@ -105,6 +110,31 @@ export default {
     },
     ...mapActions(["getColumnList", "praiseAndFloorList1"]),
     ...mapMutations(["setCurrectCateKey"])
+  },
+  mounted() {
+    this.getColumnList(1).then(res => {
+      console.log(res);
+      if (res != null && res.length != 0) {
+        this.colKey = res[0].columnKey;
+        this.setCurrectCateKey(res[0].columnKey);
+        // this.praiseAndFloorList({ pageSize: 10, offset: 1 });
+        this.praiseAndFloorList1({ pageSize: 10, offset: 1 });
+      }
+    });
+  },
+  watch: {
+    getCurrectJigouId(newValue, oldValue) {
+      console.log(newValue, oldValue);
+      this.getColumnList(1).then(res => {
+        console.log(res);
+        if (res != null && res.length != 0) {
+          this.colKey = res[0].columnKey;
+          this.setCurrectCateKey(res[0].columnKey);
+          // this.praiseAndFloorList({ pageSize: 10, offset: 1 });
+          this.praiseAndFloorList1({ pageSize: 10, offset: 1 });
+        }
+      });
+    }
   }
 };
 </script>

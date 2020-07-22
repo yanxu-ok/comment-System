@@ -31,7 +31,11 @@
           >
         </i-select>
         <!-- 搜索框 -->
-        <Input v-model="searchValue" placeholder="" style="width: 200px" />
+        <Input
+          v-model="searchValue"
+          placeholder=""
+          style="width: 200px;margin-left:20px"
+        />
         <Button type="primary" @click="handleBtnClick">搜索</Button>
       </div>
       <div>
@@ -332,8 +336,7 @@ export default {
                         JSON.parse(params.row.imgUrl).length != 0
                           ? "block"
                           : "none",
-                      width: "100px",
-                      height: "100px"
+                      "max-height": "100px"
                     }
                   })
                 ]

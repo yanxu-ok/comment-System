@@ -8,6 +8,15 @@ import {
 } from '@/api/statistics'
 export default {
   state: {
+    tabsList: [{
+        id: 0,
+        label: "点赞排行"
+      },
+      {
+        id: 1,
+        label: "盖楼排行"
+      }
+    ],
     floorDataList: [], //点赞和盖楼的列表
     praiseDataList: [],
     total: null, //文章总数
@@ -16,8 +25,13 @@ export default {
     situationList: null, // 评论概况列表
     shenHeObj: null, //审核情况
     visualizationObj: null, //可视化
+    tabs: ["like", "build"],
+    tabsIndex: 0
   },
   getters: {
+    currentTab1(state, getters, rootState) {
+      return state.tabs[state.tabsIndex];
+    },
     // 获取点赞列表
     getPraiseDataList(state) {
       return state.praiseDataList;
@@ -86,6 +100,17 @@ export default {
     }
   },
   actions: {
+    tabsHandleClick1({
+      dispatch,
+      state,
+      commit
+    }, name) {
+      commit('setFloorDataList', []);
+      commit('setPraiseDataList', []);
+      state.tabsIndex = name;
+      name = parseInt(name)
+      console.log(name);
+    },
     // 可视化
     visualization({
       commit,
@@ -131,8 +156,10 @@ export default {
       return new Promise((resolve, reject) => {
         praiseAndFloorList(obj).then(res => {
           console.log(res, "点赞列表");
-          commit('setNewTotal', res.data.totalCount)
-          commit('setPraiseDataList', res.data.dataMap.praiseDataList)
+          if (res.data.dataMap) {
+            commit('setNewTotal', res.data.totalCount)
+            commit('setPraiseDataList', res.data.dataMap.praiseDataList)
+          }
         })
       })
     },

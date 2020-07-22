@@ -292,7 +292,8 @@ export default {
                         JSON.parse(params.row.imgUrl) != "" &&
                         JSON.parse(params.row.imgUrl).length != 0
                           ? "block"
-                          : "none"
+                          : "none",
+                      "max-height": "100px"
                     }
                   })
                 ]

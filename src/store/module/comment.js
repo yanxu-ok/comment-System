@@ -175,12 +175,12 @@ export default {
       state.tabsIndex = value;
       value = parseInt(value)
       console.log(value);
-      dispatch('getHomeStationCommentVerify', {
-        offset: 1,
-        status: value,
-        pageSize: 10,
-        columnKey: state.currectCateKey
-      })
+      // dispatch('getHomeStationCommentVerify', {
+      //   offset: 1,
+      //   status: value,
+      //   pageSize: 10,
+      //   columnKey: state.currectCateKey
+      // })
     },
     // 获取栏目分类列表
     getColumnList({
