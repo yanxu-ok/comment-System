@@ -4,29 +4,42 @@
     <Card :bordered="false">
       <div class="pl_contain">
         <div v-for="(item, index) in getPlatFormList" :key="index">
-          <img src="" class="platform_img" />
+          <template>
+            <img
+              src="../../../assets/images/icon_huaban.png"
+              class="platform_img"
+            />
+          </template>
           <div>{{ item.platformName }}</div>
         </div>
       </div>
       <div class="pingtai">
         平台列表
         <hr />
-        <Tabs type="card" style="margin-top:20px" @on-click="tabsClick">
+        <Tabs type="card" style="margin-top:20px" @on-click="tabsClick1">
           <TabPane
             v-for="(tab, index) in getPlatFormList"
             :key="index"
             :label="tab.platformName"
             :name="tab.platformKey"
           >
-            <Icon
-              type="md-refresh"
-              size="28"
-              @click="jiGouRefresh(tab.platformKey)"
-            />
+            <div class="shuaxin">
+              <Button
+                type="primary"
+                @click="jiGouRefresh(tab.platformKey)"
+                style="margin-bottom:10px"
+                >刷新机构</Button
+              >
+              <Input
+                v-model="value"
+                placeholder="请输入机构名称"
+                style="width: 200px;margin-left:20px"
+              />
+            </div>
             <Table
               row-key="id"
               :columns="columns"
-              :data="getJiGouList"
+              :data="currectJigouList"
               :load-data="handleLoadData"
             >
               <template slot-scope="{ row }" slot="org">
@@ -82,11 +95,19 @@ export default {
           title: "操作",
           slot: "delete"
         }
-      ]
+      ],
+      value: "",
+      getJiGouList: []
     };
   },
   computed: {
-    ...mapGetters(["getPlatFormList", "getJiGouList"])
+    ...mapGetters(["getPlatFormList"]),
+    // 搜索框 模糊查询
+    currectJigouList() {
+      return this.getJiGouList.filter((item, index) => {
+        return item.orgName.indexOf(this.value) >= 0;
+      });
+    }
   },
   methods: {
     ...mapActions([
@@ -103,6 +124,14 @@ export default {
     handleLoadData(item, callback) {
       console.log(item);
       this.getCatesList({ item, callback });
+    },
+    // 标签点击事件
+    tabsClick1(name) {
+      console.log(name);
+      this.tabsClick(name).then(res => {
+        console.log(res);
+        this.getJiGouList = res;
+      });
     }
   },
   mounted() {
@@ -113,7 +142,9 @@ export default {
   watch: {
     getPlatFormList(newValue, oldVlue) {
       // console.log(newValue);
-      this.tabsClick(newValue[0].platformKey);
+      this.tabsClick(newValue[0].platformKey).then(res => {
+        this.getJiGouList = res;
+      });
     }
   }
 };

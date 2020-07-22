@@ -57,9 +57,9 @@ export default {
       return new Promise((resolve, reject) => {
         getJigouList(platFormId).then(res => {
           let newData = objAddAtt(res.data.data)
-          console.log(res.data, "机构列表");
+          // console.log(res.data, "机构列表");
           commit("setJiGouList", newData)
-          resolve()
+          resolve(newData)
         })
       })
     },
@@ -90,7 +90,7 @@ export default {
     }) {
       return new Promise((resolve, reject) => {
         getPlatform().then(res => {
-            // console.log(res,"获取平台接口");
+            console.log(res, "获取平台接口");
             let newData = objAddAtt(res.data.data);
             commit('setPlatFormList', newData)
             resolve(newData)
