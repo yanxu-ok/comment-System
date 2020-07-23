@@ -7,7 +7,7 @@
           access == 'platform_super'
       "
     >
-      <Dropdown @on-click="handleClick">
+      <Dropdown @on-click="handleClick" trigger="click">
         <a href="javascript:void(0)">
           {{ selectValue }}
           <Icon :size="18" type="md-arrow-dropdown"></Icon>
