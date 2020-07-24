@@ -46,9 +46,13 @@ class HttpRequest {
     instance.interceptors.request.use(config => {
       if (getToken()) {
         let token = getToken().token
+        // console.log(config);
+
         // 判断是否存在token，如果存在的话，则每个http header都加上token
         // config.headers.common['Authentication-Token'] = token;
         config.url = config.url + '?&token=' + token
+        // config.headers.Authorization = token;
+        // config.headers['token'] = token
       }
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
